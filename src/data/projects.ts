@@ -14,7 +14,7 @@ export const projects: Project[] = [
     gradient: "from-cyan-500/20 via-blue-500/10 to-purple-500/5",
     caseStudy: {
       problem:
-        "SaaS platforms need billing systems that handle subscription lifecycle, multi-currency payments, and invoice generation — but most solutions are either too simple or too complex. This microservice hits the sweet spot: a clean, production-ready billing engine that supports 39 currencies, full subscription management, and Stripe integration out of the box.",
+        "SaaS platforms need billing systems that handle subscription lifecycle, multi-currency payments, and invoice generation, but most solutions are either too simple or too complex. This microservice hits the sweet spot: a clean, production-ready billing engine that supports 39 currencies, full subscription management, and Stripe integration out of the box.",
       architecture: {
         nodes: [
           { id: "clients", label: "Client Apps", sublabel: "Web / Mobile", layer: 1, position: { x: 300, y: 20 }, size: { width: 160, height: 50 } },
@@ -48,12 +48,12 @@ export const projects: Project[] = [
         {
           question: "Why idempotent payment operations?",
           answer:
-            "Network failures happen. If a client retries a payment request, you can't charge them twice. Every payment operation uses an idempotency key — if Stripe sees the same key twice, it returns the original result instead of processing a new charge. This is table-stakes for production payment systems but something most portfolio projects skip entirely.",
+            "Network failures happen. If a client retries a payment request, you can't charge them twice. Every payment operation uses an idempotency key. If Stripe sees the same key twice, it returns the original result instead of processing a new charge. This is table-stakes for production payment systems but something most portfolio projects skip entirely.",
         },
         {
           question: "How is the subscription lifecycle managed?",
           answer:
-            "Subscriptions move through states: created → active → upgraded/downgraded → canceled → reactivated. Each transition has webhook-driven status updates from Stripe, so the system is always in sync with Stripe's state. No polling, no cron jobs — just real-time webhooks.",
+            "Subscriptions move through states: created → active → upgraded/downgraded → canceled → reactivated. Each transition has webhook-driven status updates from Stripe, so the system is always in sync with Stripe's state. No polling, no cron jobs. Just real-time webhooks.",
         },
       ],
       codeSpotlight: {
@@ -117,7 +117,7 @@ def validate_charge_amount(
         count: "27 tests across 5 categories",
         strategy: [
           "SQLite in-memory database for fast, isolated test runs",
-          "Mocked Stripe API — deterministic tests without real API calls",
+          "Mocked Stripe API for deterministic tests without real API calls",
           "Separate test categories: Customers (7), Plans (5), Subscriptions (6), Invoices & Payments (6), Currencies & Health (3)",
         ],
       },
@@ -142,7 +142,7 @@ def validate_charge_amount(
     order: 2,
     caseStudy: {
       problem:
-        "Modern applications need a flexible content storage service that can handle multiple formats, convert between them on-the-fly, and scale with cloud-native infrastructure. Fragments is a microservice that stores user-scoped content fragments with authentication, format conversion, and extensible storage backends — designed to run on AWS from day one.",
+        "Modern applications need a flexible content storage service that can handle multiple formats, convert between them on-the-fly, and scale with cloud-native infrastructure. Fragments is a microservice that stores user-scoped content fragments with authentication, format conversion, and extensible storage backends. Designed to run on AWS from day one.",
       architecture: {
         nodes: [
           { id: "client", label: "Client / UI", sublabel: "Parcel + OIDC", layer: 1, position: { x: 300, y: 20 }, size: { width: 160, height: 50 } },
@@ -164,17 +164,17 @@ def validate_charge_amount(
         {
           question: "Why three storage backends?",
           answer:
-            "The storage layer is an abstraction. In development, fragments live in memory (fast, no setup). In staging, they go to S3 + DynamoDB. In production, same — but the point is the application code doesn't know or care which backend is active. Swap the strategy, not the code. This is the Strategy pattern applied to infrastructure.",
+            "The storage layer is an abstraction. In development, fragments live in memory (fast, no setup). In staging, they go to S3 + DynamoDB. In production, same. But the point is the application code doesn't know or care which backend is active. Swap the strategy, not the code. This is the Strategy pattern applied to infrastructure.",
         },
         {
           question: "How does content negotiation work?",
           answer:
-            "When you request a fragment with a file extension (e.g., GET /v1/fragments/:id.html), the server checks if conversion is possible from the stored type to the requested type. Markdown to HTML? Sure. PNG to JPEG? Done via Sharp. JSON to YAML? No problem. The conversion pipeline is modular — adding a new format means adding one function.",
+            "When you request a fragment with a file extension (e.g., GET /v1/fragments/:id.html), the server checks if conversion is possible from the stored type to the requested type. Markdown to HTML? Sure. PNG to JPEG? Done via Sharp. JSON to YAML? No problem. The conversion pipeline is modular. Adding a new format means adding one function.",
         },
         {
           question: "Why Cognito for auth?",
           answer:
-            "AWS Cognito gives me JWT-based authentication that integrates natively with the rest of the AWS stack. The frontend uses Cognito's Hosted UI for OAuth flows. The backend validates JWTs on every request. This means user-scoped data isolation — you can only see your own fragments.",
+            "AWS Cognito gives me JWT-based authentication that integrates natively with the rest of the AWS stack. The frontend uses Cognito's Hosted UI for OAuth flows. The backend validates JWTs on every request. This means user-scoped data isolation: you can only see your own fragments.",
         },
       ],
       codeSpotlight: {
@@ -220,7 +220,7 @@ def validate_charge_amount(
           items: [
             "On-the-fly conversion: Markdown → HTML, PNG → JPEG, JSON → YAML",
             "Content negotiation via file extension in URL",
-            "Modular conversion pipeline — easy to add new formats",
+            "Modular conversion pipeline, easy to add new formats",
           ],
         },
         {
@@ -263,7 +263,7 @@ def validate_charge_amount(
     order: 3,
     caseStudy: {
       problem:
-        "Full-text search is a fundamental problem in computer science, but most developers just plug in Elasticsearch without understanding what happens underneath. This project builds a search engine from scratch using Redis sorted sets for storage and TF-IDF for relevance ranking — proving that you can build high-performance search with surprisingly simple primitives.",
+        "Full-text search is a fundamental problem in computer science, but most developers just plug in Elasticsearch without understanding what happens underneath. This project builds a search engine from scratch using Redis sorted sets for storage and TF-IDF for relevance ranking. This proves you can build high-performance search with surprisingly simple primitives.",
       architecture: {
         nodes: [
           { id: "cli", label: "CLI Input", sublabel: "argparse", layer: 1, position: { x: 80, y: 160 }, size: { width: 130, height: 50 } },
@@ -285,17 +285,17 @@ def validate_charge_amount(
         {
           question: "Why Redis sorted sets instead of a regular database?",
           answer:
-            "Redis sorted sets give me O(log N) inserts and O(log N + M) range queries, where M is the result size. For a search engine, the \"score\" in a sorted set IS the relevance score. ZUNIONSTORE lets me combine scores across multiple terms with custom weights (the IDF component) in a single atomic operation. It's elegant — the data structure IS the algorithm.",
+            "Redis sorted sets give me O(log N) inserts and O(log N + M) range queries, where M is the result size. For a search engine, the \"score\" in a sorted set IS the relevance score. ZUNIONSTORE lets me combine scores across multiple terms with custom weights (the IDF component) in a single atomic operation. It's elegant. The data structure IS the algorithm.",
         },
         {
           question: "How does TF-IDF scoring work here?",
           answer:
-            "TF (term frequency) counts how often a word appears in a document — stored as the score in Redis sorted sets at index time. IDF (inverse document frequency) is computed at query time: log(total_documents / documents_containing_term). The final score is TF × IDF. High TF-IDF means a word is frequent in this document but rare globally — exactly what you want for relevance ranking.",
+            "TF (term frequency) counts how often a word appears in a document, stored as the score in Redis sorted sets at index time. IDF (inverse document frequency) is computed at query time: log(total_documents / documents_containing_term). The final score is TF × IDF. High TF-IDF means a word is frequent in this document but rare globally. Exactly what you want for relevance ranking.",
         },
         {
           question: "How do negative search terms work?",
           answer:
-            "When you search 'python -flask', the engine first finds all documents matching 'python', then computes the set of documents containing 'flask', and subtracts using Redis ZDIFFSTORE. The set operations make this trivially efficient — no iteration needed.",
+            "When you search 'python -flask', the engine first finds all documents matching 'python', then computes the set of documents containing 'flask', and subtracts using Redis ZDIFFSTORE. The set operations make this trivially efficient. No iteration needed.",
         },
       ],
       codeSpotlight: {
@@ -306,7 +306,7 @@ def validate_charge_amount(
         df = self.redis.scard(f"idx:{term}")
         if df == 0:
             continue
-        # IDF: log(N / df) — rare terms score higher
+        # IDF: log(N / df) - rare terms score higher
         idf = math.log(n_docs / df)
         weights[f"idx:{term}"] = idf
 
@@ -375,7 +375,7 @@ def validate_charge_amount(
     slug: "housify",
     gradient: "from-violet-500/20 via-purple-500/10 to-pink-500/5",
     title: "Housify",
-    tagline: "AI + blockchain real estate platform — Seneca Hackathon 2024",
+    tagline: "AI + blockchain real estate platform, Seneca Hackathon 2024",
     hookMetric: "Blockchain deed verification · Built in 24 hours with a team of 4",
     tags: ["JavaScript", "Solidity", "Ethereum", "AI", "Vercel"],
     github: "https://github.com/harshpahurkar/Housify",
@@ -384,7 +384,7 @@ def validate_charge_amount(
     order: 4,
     caseStudy: {
       problem:
-        "Toronto's real estate market lacks transparency. Deed verification is slow, pricing feels opaque, and buyers have no objective way to assess property condition. Housify tackles all three: blockchain-based deed verification for trust, AI-powered property analysis for insights, and dynamic pricing models for transparency — built in 24 hours at Seneca Hackathon 2024.",
+        "Toronto's real estate market lacks transparency. Deed verification is slow, pricing feels opaque, and buyers have no objective way to assess property condition. Housify tackles all three: blockchain-based deed verification for trust, AI-powered property analysis for insights, and dynamic pricing models for transparency. Built in 24 hours at Seneca Hackathon 2024.",
       architecture: {
         nodes: [
           { id: "frontend", label: "React Frontend", sublabel: "Vercel", layer: 1, position: { x: 300, y: 20 }, size: { width: 160, height: 50 } },
@@ -404,17 +404,17 @@ def validate_charge_amount(
         {
           question: "Why blockchain for deed verification?",
           answer:
-            "Real estate deeds are tamper-sensitive documents. Once a deed is recorded on Ethereum, it's immutable — no one can alter ownership records after the fact. The smart contract stores deed hashes with timestamps, creating an auditable chain of ownership. In a market riddled with fraud, this is the kind of trust layer that matters.",
+            "Real estate deeds are tamper-sensitive documents. Once a deed is recorded on Ethereum, it's immutable. No one can alter ownership records after the fact. The smart contract stores deed hashes with timestamps, creating an auditable chain of ownership. In a market riddled with fraud, this is the kind of trust layer that matters.",
         },
         {
           question: "How did the team split work in 24 hours?",
           answer:
-            "Four people, 24 hours, clear separation: I focused on the backend API and infrastructure. Mukul handled the React frontend. Prabhjot built the AI analysis engine. Jashan worked on the blockchain smart contracts. We communicated through a shared API contract — defined endpoints early, built in parallel, integrated at the end.",
+            "Four people, 24 hours, clear separation: I focused on the backend API and infrastructure. Mukul handled the React frontend. Prabhjot built the AI analysis engine. Jashan worked on the blockchain smart contracts. We communicated through a shared API contract. We defined endpoints early, built in parallel, integrated at the end.",
         },
         {
           question: "What does the AI property analysis do?",
           answer:
-            "The AI engine analyzes property images using computer vision to assess condition, identifies comparable properties for pricing, and generates property insights that help buyers make informed decisions. It's not replacing human inspectors — it's giving buyers a starting point before they commit to a viewing.",
+            "The AI engine analyzes property images using computer vision to assess condition, identifies comparable properties for pricing, and generates property insights that help buyers make informed decisions. It's not replacing human inspectors. It's giving buyers a starting point before they commit to a viewing.",
         },
       ],
       codeSpotlight: {
@@ -455,7 +455,7 @@ contract DeedVerification {
         language: "solidity",
         filename: "contracts/DeedVerification.sol",
         annotation:
-          "The core smart contract. Once a deed is registered, it's immutable on the blockchain — no one can tamper with ownership records. The documentHash ensures the original deed document hasn't been altered.",
+          "The core smart contract. Once a deed is registered, it's immutable on the blockchain. No one can tamper with ownership records. The documentHash ensures the original deed document hasn't been altered.",
       },
       features: [
         {
@@ -479,7 +479,7 @@ contract DeedVerification {
           items: [
             "React frontend deployed on Vercel",
             "Node.js backend with Express API",
-            "Team of 4 — built in 24 hours at Seneca Hackathon 2024",
+            "Team of 4, built in 24 hours at Seneca Hackathon 2024",
           ],
         },
       ],
@@ -525,7 +525,7 @@ contract DeedVerification {
   {
     slug: "dermoscanners",
     title: "DermoScanners",
-    tagline: "AI skin analysis platform — team capstone project",
+    tagline: "AI skin analysis platform, team capstone project",
     hookMetric: "AI analysis + product recommendations · Full-stack TypeScript",
     tags: ["TypeScript", "React", "Node.js", "MongoDB"],
     github: "https://github.com/harshpahurkar/Dermoscanners",

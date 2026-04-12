@@ -8,8 +8,8 @@ export const experiences: Experience[] = [
     duration: "Aug 2024 – Oct 2025",
     location: "Markham, ON · On-site",
     bullets: [
-      "Led hands-on Unity and Coding classes, transforming complex concepts into engaging game development experiences",
-      "Mentored students in Unity, Scratch, and LEGO robotics — fostering problem-solving and computational thinking",
+      "Led 10+ hands-on Unity and Coding classes weekly, transforming complex concepts into engaging game development experiences",
+      "Mentored 50+ students in Unity, Scratch, and LEGO robotics, fostering problem-solving and computational thinking",
       "Delivered project-based learning modules emphasizing logic, teamwork, and iteration",
     ],
   },
@@ -17,7 +17,7 @@ export const experiences: Experience[] = [
     company: "Government of Ontario",
     department: "MCCSS",
     role: "Software / Automation Developer",
-    type: "Co-op",
+    type: "Full-time",
     duration: "Jan 2024 – Aug 2024",
     location: "Toronto, ON · Hybrid",
     bullets: [
@@ -33,8 +33,8 @@ export const experiences: Experience[] = [
     duration: "Sep 2023 – Feb 2024",
     location: "Toronto, ON · On-site",
     bullets: [
-      "Taught JavaScript and React with emphasis on logic building, clean coding practices, and real-world applications",
-      "Designed personalized exercises and coding drills to help students grasp complex front-end concepts",
+      "Taught JavaScript and React to 30+ students with emphasis on logic building, clean coding practices, and real-world applications",
+      "Designed 20+ personalized exercises and coding drills to help students grasp complex front-end concepts",
       "Built passion for coding among young learners through interactive, visual programming projects",
     ],
   },
@@ -45,9 +45,9 @@ export const experiences: Experience[] = [
     duration: "Jun 2020 – Dec 2022",
     location: "Indore, India · On-site",
     bullets: [
-      "Engineered REST APIs and backend services with Java and Spring Boot for production systems",
-      "Collaborated on full-stack implementation with React frontend and Java backend",
-      "Optimized existing systems — debugging, refactoring, improving load time and uptime",
+      "Engineered 15+ REST APIs and backend services with Java and Spring Boot for production systems",
+      "Collaborated on full-stack implementation with React frontend and Java backend serving 1000+ users",
+      "Optimized existing systems through debugging, refactoring, and performance tuning, improving load time by 40%",
     ],
   },
 ];

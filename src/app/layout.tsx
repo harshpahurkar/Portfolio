@@ -34,8 +34,8 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://harshpahurkar.dev"),
   title: {
-    default: "Harsh Pahurkar — Backend & Full-Stack Engineer",
-    template: "%s — Harsh Pahurkar",
+    default: "Harsh Pahurkar | Backend & Full-Stack Engineer",
+    template: "%s | Harsh Pahurkar",
   },
   description:
     "Backend & Full-Stack Engineer specializing in microservices, REST APIs, and cloud-native systems. Previously at the Government of Ontario. Based in Toronto.",
@@ -51,13 +51,13 @@ export const metadata: Metadata = {
     locale: "en_CA",
     url: "https://harshpahurkar.dev",
     siteName: "Harsh Pahurkar",
-    title: "Harsh Pahurkar — Backend & Full-Stack Engineer",
+    title: "Harsh Pahurkar | Backend & Full-Stack Engineer",
     description:
       "Backend & Full-Stack Engineer. Microservices, REST APIs, cloud-native systems. Previously at the Government of Ontario.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Harsh Pahurkar — Backend & Full-Stack Engineer",
+    title: "Harsh Pahurkar | Backend & Full-Stack Engineer",
     description:
       "Backend & Full-Stack Engineer. Microservices, REST APIs, cloud-native systems.",
   },

@@ -2,7 +2,7 @@ import type { NavItem, Metric } from "@/types";
 
 export const siteMetadata = {
   name: "Harsh Pahurkar",
-  title: "Harsh Pahurkar — Backend & Full-Stack Engineer",
+  title: "Harsh Pahurkar | Backend & Full-Stack Engineer",
   description:
     "Backend & Full-Stack Engineer specializing in microservices, REST APIs, and cloud-native systems. Previously at the Government of Ontario. Based in Toronto.",
   url: "https://harshpahurkar.dev",
@@ -34,15 +34,15 @@ export const heroData = {
 
 export const aboutData = {
   paragraphs: [
-    "I'm a backend-focused engineer based in Toronto. I've spent the last 4+ years building the systems that products depend on — billing platforms, cloud microservices, API infrastructure. I designed automation pipelines for the Government of Ontario and shipped production backend services at Affimintus Technologies. I have strong opinions, loosely held. Okay, some are tightly held.",
-    "Before Canada, I spent 2.5 years as a Software Developer at Affimintus Technologies in India, working on production REST APIs with Java and Spring Boot. That's where I learned what real-world backend engineering looks like — not tutorials, but actual systems impacting thousands of users.",
-    "I graduated from Seneca Polytechnic with a 3.6 GPA Honours in Computer Programming & Analysis. I also teach coding to kids at Code Ninjas — because if you can explain microservices to a 10-year-old, you actually understand them.",
+    "I'm a backend-focused engineer based in Toronto. I've spent the last 4+ years building the systems that products depend on: billing platforms, cloud microservices, API infrastructure. I designed automation pipelines for the Government of Ontario and shipped production backend services at Affimintus Technologies. I have strong opinions, loosely held. Okay, some are tightly held.",
+    "Before Canada, I spent 2.5 years as a Software Developer at Affimintus Technologies in India, working on production REST APIs with Java and Spring Boot. That's where I learned what real-world backend engineering looks like. Not tutorials, but actual systems impacting thousands of users.",
+    "I graduated from Seneca Polytechnic with a 3.6 GPA Honours in Computer Programming & Analysis. I also teach coding to kids at Code Ninjas, because if you can explain microservices to a 10-year-old, you actually understand them.",
     "When I'm not writing API endpoints, I'm probably speedrunning Resident Evil or explaining why your favorite framework is mid.",
   ],
   currently:
     "Currently seeking backend SWE roles in Toronto. Yes, I will debate your architecture choices. No, I won't apologize.",
   whatIBring:
-    "I bring production backend thinking — API design, cloud infrastructure, testing discipline, and CI/CD automation. Also unsolicited code reviews.",
+    "I bring production backend thinking: API design, cloud infrastructure, testing discipline, and CI/CD automation. Also unsolicited code reviews.",
 };
 
 export const metrics: Metric[] = [
@@ -62,7 +62,7 @@ export const navItems: NavItem[] = [
 export const contactData = {
   heading: "Get In Touch",
   description:
-    "Whether you have a job opportunity, a hot take about microservices, or just want to debate tabs vs spaces — my inbox is open and has better uptime than most production APIs.",
+    "Whether you have a job opportunity, a hot take about microservices, or just want to debate tabs vs spaces, my inbox is open and has better uptime than most production APIs.",
   email: "harshpahurkar33@gmail.com",
   linkedin: "https://linkedin.com/in/harshpahurkar",
   github: "https://github.com/harshpahurkar",
@@ -72,7 +72,7 @@ export const contactData = {
 export const footerData = {
   builtWith: "Built with Next.js, Tailwind CSS & Framer Motion. Deployed on Vercel. Fueled by spite and energy drinks.",
   openSource: {
-    text: "View source — I dare you.",
+    text: "View source. I dare you.",
     href: "https://github.com/harshpahurkar/Portfolio",
   },
 };
