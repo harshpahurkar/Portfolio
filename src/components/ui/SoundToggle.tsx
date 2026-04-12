@@ -6,7 +6,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { isAudioEnabled, toggleAudio, playSound } from "@/lib/audio";
 
 export default function SoundToggle() {
-  const [enabled, setEnabled] = useState(isAudioEnabled);
+  const [enabled, setEnabled] = useState(() => isAudioEnabled());
 
   function handleToggle() {
     const next = toggleAudio();

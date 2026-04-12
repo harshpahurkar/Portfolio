@@ -4,12 +4,24 @@
 type SoundType = "type" | "hover" | "click" | "glitch" | "success" | "whoosh";
 
 let audioCtx: AudioContext | null = null;
-let _enabled = false;
+let _enabled = true;
 
 function ctx(): AudioContext {
   if (!audioCtx) audioCtx = new AudioContext();
   if (audioCtx.state === "suspended") audioCtx.resume();
   return audioCtx;
+}
+
+// Browsers block AudioContext until a user gesture.
+// Eagerly create the context on first interaction so sounds work immediately.
+if (typeof window !== "undefined") {
+  const unlock = () => {
+    ctx();
+    window.removeEventListener("pointerdown", unlock);
+    window.removeEventListener("keydown", unlock);
+  };
+  window.addEventListener("pointerdown", unlock, { once: true });
+  window.addEventListener("keydown", unlock, { once: true });
 }
 
 // Short typing blip
