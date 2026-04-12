@@ -1,0 +1,283 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* ── Blade Runner / Retro Cyberpunk Palette ── */
+  --color-background: #0a0a0f;
+  --color-background-card: #12121a;
+  --color-foreground: #e8e6e3;
+  --color-muted: #6b6b7b;
+  --color-accent: #ff2d55;           /* Hot pink — primary accent */
+  --color-accent-hover: #ff4d6f;
+  --color-accent-warm: #ff6b2b;      /* Neon orange */
+  --color-accent-secondary: #00e5ff; /* Electric cyan — secondary */
+  --color-accent-tertiary: #bf5af2;  /* Neon violet */
+
+  --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", "Fira Code", monospace;
+  --font-display: var(--font-inter), "Inter", system-ui, sans-serif;
+
+  --breakpoint-xs: 475px;
+}
+
+html {
+  scroll-padding-top: 80px;
+  font-size: 17px;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Film grain — subtle analog texture */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Scanlines — retro depth */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.025;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+}
+
+/* Custom cursor — desktop only */
+@media (pointer: fine) and (min-width: 1024px) {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+}
+
+/* Custom scrollbar — cyberpunk accent */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(10, 10, 15, 0.8);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(255, 45, 85, 0.3);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-hover);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: rgba(255, 45, 85, 0.25);
+  color: var(--color-foreground);
+}
+
+.writing-vertical-rl {
+  writing-mode: vertical-rl;
+}
+
+/* Gradient text — hot pink to cyan sweep */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-secondary) 50%, var(--color-accent-tertiary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Display font utility */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Neon glow — hot pink halo */
+.neon-glow {
+  text-shadow:
+    0 0 10px rgba(255, 45, 85, 0.4),
+    0 0 40px rgba(255, 45, 85, 0.15),
+    0 0 80px rgba(255, 45, 85, 0.05);
+}
+
+/* Cyan glow variant */
+.cyan-glow {
+  text-shadow:
+    0 0 10px rgba(0, 229, 255, 0.4),
+    0 0 40px rgba(0, 229, 255, 0.15);
+}
+
+/* Section divider — accent gradient */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 45, 85, 0.2), rgba(0, 229, 255, 0.1), transparent);
+}
+
+/* Card hover — subtle lift + glow */
+.card-glow {
+  transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
+}
+.card-glow:hover {
+  box-shadow: 0 8px 50px rgba(255, 45, 85, 0.08), 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Inline link styling */
+.prose-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.prose-link:hover {
+  color: var(--color-accent-hover);
+}
+
+/* Border with accent gradient */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 45, 85, 0.2), rgba(0, 229, 255, 0.1), rgba(191, 90, 242, 0.15));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Accent text hover */
+.accent-glow:hover {
+  color: var(--color-accent);
+}
+
+/* Retro perspective grid background */
+.cyber-grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 45, 85, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 45, 85, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Card border with glow */
+.glow-border {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.glow-border:hover {
+  border-color: rgba(255, 45, 85, 0.25);
+  box-shadow: 0 0 30px rgba(255, 45, 85, 0.06), 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Lenis handles smooth scrolling */
+
+/* ── Terminal cursor blink ── */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ── Screen flash fade (name reveal) ── */
+@keyframes flash-fade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Glitch hover effect — randomized distortion */
+.glitch-hover {
+  position: relative;
+  transition: color 0.2s ease;
+}
+.glitch-hover:hover {
+  animation: glitch-text 0.3s ease;
+}
+
+/* ── Floating animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ── Glitch text shake ── */
+@keyframes glitch-text {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+  100% { transform: translate(0); }
+}
+
+/* ── Flicker — retro CRT effect ── */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+/* ── Keyframes ── */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes flash-fade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes pop-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* ── Ambient color shift for backgrounds ── */
+@keyframes ambient-shift {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(15deg); }
+}
+
+/* ── Horizontal scan line ── */
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+
