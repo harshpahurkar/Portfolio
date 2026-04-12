@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# harshpahurkar.dev
+
+My personal portfolio and project showcase. Built with Next.js, deployed on Vercel.
+
+**Live:** [harshpahurkar.dev](https://harshpahurkar.dev)
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Animations:** Framer Motion, custom Web Audio API synth sounds
+- **Smooth Scroll:** Lenis
+- **Syntax Highlighting:** Shiki
+- **Icons:** Lucide React
+- **Deployment:** Vercel
+
+## Features
+
+- Interactive particle constellation background with mouse reactivity
+- Per-section color identity system (cyan, orange, violet, pink)
+- Synthesized sound effects (hover, click, type, glitch, success, whoosh)
+- Detailed case study pages with architecture diagrams and code spotlights
+- Smooth scroll, parallax effects, and scroll-triggered animations
+- Console easter eggs and Konami code
+- SEO optimized with dynamic OG images and sitemap generation
+- Fully responsive
+
+## Projects Featured
+
+- **Global Billing Service** | Multi-currency billing microservice (Stripe, AWS ECS, 39 currencies)
+- **Fragments Microservice** | Cloud-native content service (S3, DynamoDB, Cognito)
+- **Redis Search Engine** | Full-text search engine built on Redis
+- **Housify** | Real estate platform
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/              # Pages and API routes
+│   └── projects/     # Dynamic case study pages
+├── components/
+│   ├── case-study/   # Case study page components
+│   ├── layout/       # Navigation, Footer, MobileMenu
+│   ├── sections/     # Homepage sections (Hero, About, Projects, etc.)
+│   └── ui/           # Reusable UI components and animations
+├── data/             # All content and project data
+└── lib/              # Utilities, audio engine, animations
+```
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
