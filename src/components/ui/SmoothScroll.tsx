@@ -7,12 +7,20 @@ import "lenis/dist/lenis.css";
 export default function SmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.1,
+      duration: 1.2,
+      easing: (t: number) => 1 - Math.pow(1 - t, 4),
       smoothWheel: true,
       touchMultiplier: 2,
       wheelMultiplier: 1,
-      autoRaf: true,
     });
+
+    // Manual RAF loop — syncs to actual display refresh rate (144Hz, etc.)
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
 
     // Make lenis available for anchor links
     const handleClick = (e: MouseEvent) => {
@@ -30,6 +38,7 @@ export default function SmoothScroll() {
     document.addEventListener("click", handleClick);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
       document.removeEventListener("click", handleClick);
     };
