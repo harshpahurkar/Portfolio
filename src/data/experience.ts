@@ -42,7 +42,7 @@ export const experiences: Experience[] = [
     company: "Affimintus Technologies",
     role: "Software Developer",
     type: "Full-time",
-    duration: "Jun 2020 – Dec 2022",
+    duration: "Jun 2021 – Dec 2022",
     location: "Indore, India · On-site",
     bullets: [
       "Engineered 15+ REST APIs and backend services with Java and Spring Boot for production systems",

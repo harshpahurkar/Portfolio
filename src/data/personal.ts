@@ -34,8 +34,8 @@ export const heroData = {
 
 export const aboutData = {
   paragraphs: [
-    "I'm a backend-focused engineer based in Toronto. I've spent the last 4+ years building the systems that products depend on: billing platforms, cloud microservices, API infrastructure. I designed automation pipelines for the Government of Ontario and shipped production backend services at Affimintus Technologies. I have strong opinions, loosely held. Okay, some are tightly held.",
-    "Before Canada, I spent 2.5 years as a Software Developer at Affimintus Technologies in India, working on production REST APIs with Java and Spring Boot. That's where I learned what real-world backend engineering looks like. Not tutorials, but actual systems impacting thousands of users.",
+    "I'm a backend-focused engineer based in Toronto. I've spent the last 3+ years building the systems that products depend on: billing platforms, cloud microservices, API infrastructure. I designed automation pipelines for the Government of Ontario and shipped production backend services at Affimintus Technologies. I have strong opinions, loosely held. Okay, some are tightly held.",
+    "Before Canada, I spent 1.5 years as a Software Developer at Affimintus Technologies in India, working on production REST APIs with Java and Spring Boot. That's where I learned what real-world backend engineering looks like. Not tutorials, but actual systems impacting thousands of users.",
     "I graduated from Seneca Polytechnic with a 3.6 GPA Honours in Computer Programming & Analysis. I also teach coding to kids at Code Ninjas, because if you can explain microservices to a 10-year-old, you actually understand them.",
     "When I'm not writing API endpoints, I'm probably speedrunning Resident Evil or explaining why your favorite framework is mid.",
   ],
@@ -46,7 +46,7 @@ export const aboutData = {
 };
 
 export const metrics: Metric[] = [
-  { value: "4+", label: "Years Experience" },
+  { value: "3+", label: "Years Experience" },
   { value: "75%", label: "Testing Reduction" },
   { value: "39", label: "Currencies Processed" },
   { value: "200+", label: "Endpoints Validated" },
