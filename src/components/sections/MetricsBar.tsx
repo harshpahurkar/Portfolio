@@ -44,7 +44,7 @@ function CountUp({ value }: { value: string }) {
 export default function MetricsBar() {
   return (
     <ScrollReveal>
-      <div className="relative border-y border-white/[0.06] py-14 md:py-20 overflow-hidden">
+      <div className="relative border-y border-white/[0.06] py-10 md:py-14 overflow-hidden">
         <div className="max-w-[1100px] mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-4 relative">
           {metrics.map((m) => (
             <div key={m.label} className="text-center">

@@ -67,7 +67,7 @@ export default function Hero() {
     <section
       ref={containerRef}
       id="hero"
-      className="min-h-screen flex items-center pt-16 relative overflow-hidden"
+      className="min-h-[90vh] flex items-center pt-16 relative overflow-hidden"
     >
       {/* Mouse-reactive ambient glow — hot pink */}
       <motion.div
