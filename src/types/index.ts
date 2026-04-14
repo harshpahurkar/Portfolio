@@ -11,6 +11,7 @@ export interface Project {
   featured: boolean;
   order: number;
   gradient?: string;
+  image?: string;
   caseStudy?: CaseStudy;
 }
 

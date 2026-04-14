@@ -12,6 +12,7 @@ export const projects: Project[] = [
     featured: true,
     order: 1,
     gradient: "from-cyan-500/20 via-blue-500/10 to-purple-500/5",
+    image: "/projects/global-billing-service.png",
     caseStudy: {
       problem:
         "SaaS platforms need billing systems that handle subscription lifecycle, multi-currency payments, and invoice generation, but most solutions are either too simple or too complex. This microservice hits the sweet spot: a clean, production-ready billing engine that supports 39 currencies, full subscription management, and Stripe integration out of the box.",
@@ -140,6 +141,7 @@ def validate_charge_amount(
     github: "https://github.com/harshpahurkar/fragments",
     featured: true,
     order: 2,
+    image: "/projects/fragments.png",
     caseStudy: {
       problem:
         "Modern applications need a flexible content storage service that can handle multiple formats, convert between them on-the-fly, and scale with cloud-native infrastructure. Fragments is a microservice that stores user-scoped content fragments with authentication, format conversion, and extensible storage backends. Designed to run on AWS from day one.",
@@ -261,6 +263,7 @@ def validate_charge_amount(
     github: "https://github.com/harshpahurkar/redis-search-engine",
     featured: true,
     order: 3,
+    image: "/projects/redis-search-engine.png",
     caseStudy: {
       problem:
         "Full-text search is a fundamental problem in computer science, but most developers just plug in Elasticsearch without understanding what happens underneath. This project builds a search engine from scratch using Redis sorted sets for storage and TF-IDF for relevance ranking. This proves you can build high-performance search with surprisingly simple primitives.",
@@ -382,6 +385,7 @@ def validate_charge_amount(
     live: "https://housify-2024.vercel.app",
     featured: true,
     order: 4,
+    image: "/projects/housify.png",
     caseStudy: {
       problem:
         "Toronto's real estate market lacks transparency. Deed verification is slow, pricing feels opaque, and buyers have no objective way to assess property condition. Housify tackles all three: blockchain-based deed verification for trust, AI-powered property analysis for insights, and dynamic pricing models for transparency. Built in 24 hours at Seneca Hackathon 2024.",

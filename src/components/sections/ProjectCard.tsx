@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import TechTag from "@/components/ui/TechTag";
 import TiltCard from "@/components/ui/TiltCard";
@@ -55,14 +56,26 @@ export default function ProjectCard({ project }: { project: Project }) {
         {visual && (
           <div
             className="relative h-36 md:h-40 shrink-0 overflow-hidden"
-            style={{ background: visual.gradient }}
+            style={{ background: project.image ? undefined : visual.gradient }}
           >
-            {/* Monogram watermark */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white/[0.08] text-[80px] md:text-[100px] font-black leading-none select-none tracking-[-0.05em] group-hover:tracking-[0.02em] transition-all duration-700">
-                {visual.monogram}
-              </span>
-            </div>
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            ) : (
+              <>
+                {/* Monogram watermark */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-white/[0.08] text-[80px] md:text-[100px] font-black leading-none select-none tracking-[-0.05em] group-hover:tracking-[0.02em] transition-all duration-700">
+                    {visual.monogram}
+                  </span>
+                </div>
+              </>
+            )}
             {/* Label badge */}
             <div className="absolute bottom-3 left-4">
               <span className="text-[10px] font-mono text-white/60 bg-black/20 backdrop-blur-sm px-2.5 py-1 rounded-full">
