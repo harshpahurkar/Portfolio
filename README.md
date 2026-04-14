@@ -2,7 +2,7 @@
 
 My personal portfolio and project showcase. Built with Next.js, deployed on Vercel.
 
-**Live:** [harshpahurkar.dev](https://harshpahurkar.com)
+**Live:** [harshpahurkar.com](https://harshpahurkar.com)
 
 ## Tech Stack
 
