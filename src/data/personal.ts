@@ -26,23 +26,23 @@ export const heroData = {
   name: "Harsh Pahurkar.",
   headline: "I build things that actually work.",
   description:
-    "Backend & Full-Stack Engineer who turns caffeine into microservices, REST APIs, and cloud-native systems that handle real-world chaos. Previously broke things (on purpose) at the ",
+    "Backend & Full-Stack Engineer focused on microservices, REST APIs, and cloud-native systems. Previously at the ",
   descriptionHighlight: "Government of Ontario",
-  descriptionEnd: ". Ask me about the time I automated myself out of a job.",
+  descriptionEnd: ".",
   status: "Available for opportunities",
 };
 
 export const aboutData = {
   paragraphs: [
-    "I'm a backend-focused engineer based in Toronto. I've spent the last 3+ years building the systems that products depend on: billing platforms, cloud microservices, API infrastructure. I designed automation pipelines for the Government of Ontario and shipped production backend services at Affimintus Technologies. I have strong opinions, loosely held. Okay, some are tightly held.",
-    "Before Canada, I spent 1.5 years as a Software Developer at Affimintus Technologies in India, working on production REST APIs with Java and Spring Boot. That's where I learned what real-world backend engineering looks like. Not tutorials, but actual systems impacting thousands of users.",
-    "I graduated from Seneca Polytechnic with a 3.6 GPA Honours in Computer Programming & Analysis. I also teach coding to kids at Code Ninjas, because if you can explain microservices to a 10-year-old, you actually understand them.",
-    "When I'm not writing API endpoints, I'm probably speedrunning Resident Evil or explaining why your favorite framework is mid.",
+    "I'm a backend-focused engineer based in Toronto. Over the past 3+ years I've worked on billing platforms, cloud microservices, and API infrastructure — at the Government of Ontario and before that at Affimintus Technologies in India.",
+    "At Affimintus I spent 1.5 years building production REST APIs with Java and Spring Boot. At the Government of Ontario I built automation frameworks and CI/CD pipelines. The through-line is backend systems that other people depend on.",
+    "I graduated from Seneca Polytechnic with a 3.6 GPA Honours in Computer Programming & Analysis. I also teach coding to kids at Code Ninjas — it's a good way to stay sharp on fundamentals.",
+    "Outside of work I'm usually speedrunning Resident Evil 4 or diving into whatever new tech caught my attention that week.",
   ],
   currently:
-    "Currently seeking backend SWE roles in Toronto. Yes, I will debate your architecture choices. No, I won't apologize.",
+    "Currently looking for backend SWE roles in Toronto.",
   whatIBring:
-    "I bring production backend thinking: API design, cloud infrastructure, testing discipline, and CI/CD automation. Also unsolicited code reviews.",
+    "Production backend thinking: API design, cloud infrastructure, testing discipline, and CI/CD automation.",
 };
 
 export const metrics: Metric[] = [
@@ -62,7 +62,7 @@ export const navItems: NavItem[] = [
 export const contactData = {
   heading: "Get In Touch",
   description:
-    "Whether you have a job opportunity, a hot take about microservices, or just want to debate tabs vs spaces, my inbox is open and has better uptime than most production APIs.",
+    "I'm currently open to new opportunities. If you have a role that might be a good fit, or just want to connect, feel free to reach out.",
   email: "harshpahurkar33@gmail.com",
   linkedin: "https://linkedin.com/in/harshpahurkar",
   github: "https://github.com/harshpahurkar",
@@ -70,9 +70,9 @@ export const contactData = {
 };
 
 export const footerData = {
-  builtWith: "Built with Next.js, Tailwind CSS & Framer Motion. Deployed on Vercel. Fueled by spite and energy drinks.",
+  builtWith: "Built with Next.js, Tailwind CSS & Framer Motion. Deployed on Vercel.",
   openSource: {
-    text: "View source. I dare you.",
+    text: "View source on GitHub",
     href: "https://github.com/harshpahurkar/Portfolio",
   },
 };

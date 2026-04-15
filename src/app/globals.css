@@ -20,6 +20,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   scroll-padding-top: 80px;
   font-size: 17px;
   overflow-x: hidden;

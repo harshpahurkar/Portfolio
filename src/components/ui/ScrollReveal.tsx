@@ -14,10 +14,10 @@ interface ScrollRevealProps {
 }
 
 const offsets = {
-  up: { y: 50 },
-  down: { y: -50 },
-  left: { x: 60 },
-  right: { x: -60 },
+  up: { y: 30 },
+  down: { y: -30 },
+  left: { x: 40 },
+  right: { x: -40 },
 };
 
 const variants = {
@@ -47,7 +47,7 @@ export default function ScrollReveal({
   variant = "default",
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
   const reduced = useReducedMotion();
 
   if (reduced) {
@@ -62,9 +62,9 @@ export default function ScrollReveal({
       initial={v.hidden}
       animate={isInView ? v.visible : v.hidden}
       transition={{
-        duration: variant === "slide" ? 0.7 : 0.5,
+        duration: variant === "slide" ? 0.5 : 0.4,
         delay,
-        ease: [0.16, 1, 0.3, 1],
+        ease: [0.25, 1, 0.5, 1],
       }}
       className={cn(className)}
     >
