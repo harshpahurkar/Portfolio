@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useInView } from "framer-motion";
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*";
@@ -14,18 +14,22 @@ interface TextScrambleProps {
 export default function TextScramble({ text, className = "", delay = 0 }: TextScrambleProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const [display, setDisplay] = useState(text);
-  const [hasRun, setHasRun] = useState(false);
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
-    if (!inView || hasRun) return;
+    if (!inView || hasRunRef.current) return;
+    hasRunRef.current = true;
+    const el = ref.current;
+    if (!el) return;
 
-    const timer = setTimeout(() => {
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const timerId = setTimeout(() => {
       let frame = 0;
       const totalFrames = text.length * 3;
       const revealedAt: number[] = text.split("").map((_, i) => i * 2 + Math.random() * 4);
 
-      const interval = setInterval(() => {
+      intervalId = setInterval(() => {
         frame++;
         const result = text
           .split("")
@@ -36,24 +40,24 @@ export default function TextScramble({ text, className = "", delay = 0 }: TextSc
           })
           .join("");
 
-        setDisplay(result);
+        el.textContent = result;
 
         if (frame >= totalFrames) {
-          clearInterval(interval);
-          setDisplay(text);
-          setHasRun(true);
+          if (intervalId) clearInterval(intervalId);
+          el.textContent = text;
         }
       }, 30);
-
-      return () => clearInterval(interval);
     }, delay * 1000);
 
-    return () => clearTimeout(timer);
-  }, [inView, text, delay, hasRun]);
+    return () => {
+      clearTimeout(timerId);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [inView, text, delay]);
 
   return (
     <span ref={ref} className={className}>
-      {display}
+      {text}
     </span>
   );
 }

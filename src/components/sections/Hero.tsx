@@ -26,7 +26,7 @@ export default function Hero() {
       mouseX.set(e.clientX / window.innerWidth);
       mouseY.set(e.clientY / window.innerHeight);
     };
-    window.addEventListener("mousemove", handle);
+    window.addEventListener("mousemove", handle, { passive: true });
     return () => window.removeEventListener("mousemove", handle);
   }, [mouseX, mouseY]);
 

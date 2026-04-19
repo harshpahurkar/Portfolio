@@ -10,7 +10,7 @@ export default function PageTransition() {
 
   useEffect(() => {
     // Short delay then reveal
-    const timer = setTimeout(() => setLoading(false), 1800);
+    const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -49,7 +49,7 @@ export default function PageTransition() {
                   strokeLinejoin="round"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  transition={{ duration: 0.7, ease: "easeInOut" }}
                 />
                 <motion.text
                   x="40"
@@ -61,7 +61,7 @@ export default function PageTransition() {
                   fontWeight="bold"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.8, duration: 0.4 }}
+                  transition={{ delay: 0.5, duration: 0.3 }}
                 >
                   HP
                 </motion.text>
@@ -73,7 +73,7 @@ export default function PageTransition() {
               className="absolute -bottom-8 left-1/2 -translate-x-1/2 h-[2px] bg-accent rounded-full shadow-[0_0_10px_rgba(255,45,85,0.4)]"
               initial={{ width: 0 }}
               animate={{ width: 60 }}
-              transition={{ duration: 1.4, ease: "easeInOut" }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
             />
           </div>
         </motion.div>

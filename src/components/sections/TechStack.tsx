@@ -1,10 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { techStack } from "@/data/techStack";
-import { playSound } from "@/lib/audio";
 
 const CATEGORY_COLORS: Record<string, { text: string; border: string; bg: string; shadow: string; label: string }> = {
   "Languages": { text: "hover:text-accent", border: "hover:border-accent/30", bg: "hover:bg-accent/[0.06]", shadow: "hover:shadow-[0_0_15px_rgba(255,45,85,0.1)]", label: "text-accent/90" },
@@ -37,20 +35,13 @@ export default function TechStack() {
                   {category.category}
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
-                  {category.items.map((item, j) => (
-                    <motion.span
+                  {category.items.map((item) => (
+                    <span
                       key={item.name}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: j * 0.03, duration: 0.3 }}
-                      whileHover={{ scale: 1.08, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onHoverStart={() => playSound("hover")}
-                      className={`px-3.5 py-1.5 text-sm text-muted bg-background border border-white/[0.06] rounded-md ${colors.text} ${colors.border} ${colors.bg} ${colors.shadow} transition-all duration-200 cursor-default`}
+                      className={`px-3.5 py-1.5 text-sm text-muted bg-background border border-white/[0.06] rounded-md ${colors.text} ${colors.border} ${colors.bg} ${colors.shadow} transition-all duration-200 cursor-default hover:scale-[1.08] hover:-translate-y-0.5 active:scale-95`}
                     >
                       {item.name}
-                    </motion.span>
+                    </span>
                   ))}
                 </div>
               </div>

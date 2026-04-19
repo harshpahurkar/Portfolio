@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -46,11 +45,9 @@ export default function ProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/projects/${project.slug}`} onClick={() => playSound("click")}>
       <TiltCard className="relative h-full">
-        <motion.article
-          onHoverStart={() => playSound("hover")}
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.2 }}
-          className="h-full rounded-lg overflow-hidden border border-white/[0.06] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-black/20 transition-all duration-300 cursor-pointer flex flex-col group"
+        <article
+          onMouseEnter={() => playSound("hover")}
+          className="h-full rounded-lg overflow-hidden border border-white/[0.06] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-[5px] transition-all duration-200 cursor-pointer flex flex-col group"
         >
         {/* Visual header zone */}
         {visual && (
@@ -126,7 +123,7 @@ export default function ProjectCard({ project }: { project: Project }) {
             </span>
           </div>
         </div>
-      </motion.article>
+      </article>
       </TiltCard>
     </Link>
   );

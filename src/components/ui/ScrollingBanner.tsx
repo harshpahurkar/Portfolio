@@ -39,13 +39,13 @@ export default function ScrollingBanner() {
         style={{ x: x1 }}
         className="whitespace-nowrap text-accent/[0.05] text-6xl md:text-8xl font-display font-black tracking-tight"
       >
-        {line}&nbsp;&nbsp;{line}&nbsp;&nbsp;{line}
+        {line}&nbsp;&nbsp;{line}
       </motion.div>
       <motion.div
         style={{ x: x2 }}
         className="whitespace-nowrap text-accent-secondary/[0.04] text-6xl md:text-8xl font-display font-black tracking-tight mt-2"
       >
-        {line}&nbsp;&nbsp;{line}&nbsp;&nbsp;{line}
+        {line}&nbsp;&nbsp;{line}
       </motion.div>
     </div>
   );

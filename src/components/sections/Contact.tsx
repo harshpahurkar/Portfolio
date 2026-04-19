@@ -16,6 +16,7 @@ export default function Contact() {
     offset: ["start end", "end start"],
   });
   const orbY = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const orbY2 = useTransform(scrollYProgress, [0, 1], [-40, 40]);
   const orbScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1.2, 0.9]);
 
   return (
@@ -29,7 +30,7 @@ export default function Contact() {
       />
       <motion.div
         className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[300px] h-[300px] bg-accent-secondary/[0.06] rounded-full blur-[100px] pointer-events-none"
-        style={{ y: useTransform(scrollYProgress, [0, 1], [-40, 40]), scale: orbScale }}
+        style={{ y: orbY2, scale: orbScale }}
       />
 
       <div className="max-w-[600px] mx-auto px-6 text-center relative">

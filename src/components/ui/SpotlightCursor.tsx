@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export default function SpotlightCursor() {
   const spotlightRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -20,6 +19,22 @@ export default function SpotlightCursor() {
 
     let mouseX = 0, mouseY = 0;
     let ringX = 0, ringY = 0;
+    let animating = false;
+    let isHovering = false;
+
+    function updateHoverState(hovering: boolean) {
+      if (hovering === isHovering) return;
+      isHovering = hovering;
+      const dotSize = hovering ? "12px" : "6px";
+      const ringSize = hovering ? "50px" : "36px";
+      dot!.style.width = dotSize;
+      dot!.style.height = dotSize;
+      ring!.style.width = ringSize;
+      ring!.style.height = ringSize;
+      ring!.style.borderColor = hovering
+        ? "rgba(255, 255, 255, 0.5)"
+        : "rgba(255, 255, 255, 0.2)";
+    }
 
     function onMove(e: MouseEvent) {
       mouseX = e.clientX;
@@ -31,40 +46,52 @@ export default function SpotlightCursor() {
       dot!.style.top = `${mouseY}px`;
       dot!.style.opacity = "1";
       ring!.style.opacity = "1";
+
+      // Detect interactive elements inline
+      const target = e.target as HTMLElement;
+      const interactive = target.closest("a, button, [role='button'], input, textarea, select");
+      updateHoverState(!!interactive);
+
+      if (!animating) {
+        animating = true;
+        requestAnimationFrame(animate);
+      }
     }
 
     function onLeave() {
       spotlight!.style.opacity = "0";
       dot!.style.opacity = "0";
       ring!.style.opacity = "0";
+      animating = false;
     }
 
-    // Smooth follow animation for ring
     function animate() {
-      ringX += (mouseX - ringX) * 0.12;
-      ringY += (mouseY - ringY) * 0.12;
+      if (!animating) return;
+      const dx = mouseX - ringX;
+      const dy = mouseY - ringY;
+      // Stop animating when close enough
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+        ringX = mouseX;
+        ringY = mouseY;
+        ring!.style.left = `${ringX}px`;
+        ring!.style.top = `${ringY}px`;
+        animating = false;
+        return;
+      }
+      ringX += dx * 0.12;
+      ringY += dy * 0.12;
       ring!.style.left = `${ringX}px`;
       ring!.style.top = `${ringY}px`;
       requestAnimationFrame(animate);
     }
 
-    // Detect interactive elements
-    function onOverInteractive(e: MouseEvent) {
-      const target = e.target as HTMLElement;
-      const interactive = target.closest("a, button, [role='button'], input, textarea, select");
-      setIsHovering(!!interactive);
-    }
-
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mousemove", onOverInteractive);
+    document.addEventListener("mousemove", onMove, { passive: true });
     document.addEventListener("mouseleave", onLeave);
-    const frameId = requestAnimationFrame(animate);
 
     return () => {
       document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mousemove", onOverInteractive);
       document.removeEventListener("mouseleave", onLeave);
-      cancelAnimationFrame(frameId);
+      animating = false;
     };
   }, [reduced]);
 
@@ -86,8 +113,8 @@ export default function SpotlightCursor() {
         ref={dotRef}
         className="pointer-events-none fixed z-50 opacity-0 lg:block hidden"
         style={{
-          width: isHovering ? 12 : 6,
-          height: isHovering ? 12 : 6,
+          width: 6,
+          height: 6,
           borderRadius: "50%",
           backgroundColor: "#ffffff",
           transform: "translate(-50%, -50%)",
@@ -100,10 +127,10 @@ export default function SpotlightCursor() {
         ref={ringRef}
         className="pointer-events-none fixed z-50 opacity-0 lg:block hidden"
         style={{
-          width: isHovering ? 50 : 36,
-          height: isHovering ? 50 : 36,
+          width: 36,
+          height: 36,
           borderRadius: "50%",
-          border: `1.5px solid rgba(255, 255, 255, ${isHovering ? 0.5 : 0.2})`,
+          border: "1.5px solid rgba(255, 255, 255, 0.2)",
           transform: "translate(-50%, -50%)",
           transition: "width 0.3s ease, height 0.3s ease, border-color 0.3s",
         }}

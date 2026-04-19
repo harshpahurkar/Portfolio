@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useRef, useCallback } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface TiltCardProps {
@@ -18,16 +17,10 @@ export default function TiltCard({
   glare = true,
 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [transform, setTransform] = useState({ rotateX: 0, rotateY: 0 });
-  const [glarePos, setGlarePos] = useState({ x: 50, y: 50 });
-  const [hovering, setHovering] = useState(false);
+  const glareRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
-
-  function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
+  const handleMouse = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -35,44 +28,39 @@ export default function TiltCard({
     const y = (e.clientY - rect.top) / rect.height;
     const rotateY = (x - 0.5) * tiltAmount * 2;
     const rotateX = (0.5 - y) * tiltAmount * 2;
-    setTransform({ rotateX, rotateY });
-    setGlarePos({ x: x * 100, y: y * 100 });
-  }
+    el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    if (glare && glareRef.current) {
+      glareRef.current.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.12) 0%, transparent 55%)`;
+      glareRef.current.style.opacity = "1";
+    }
+  }, [tiltAmount, glare]);
 
-  function handleEnter() {
-    setHovering(true);
-  }
+  const handleLeave = useCallback(() => {
+    const el = ref.current;
+    if (el) el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg)";
+    if (glareRef.current) glareRef.current.style.opacity = "0";
+  }, []);
 
-  function handleLeave() {
-    setHovering(false);
-    setTransform({ rotateX: 0, rotateY: 0 });
+  if (reduced) {
+    return <div className={className}>{children}</div>;
   }
 
   return (
-    <motion.div
+    <div
       ref={ref}
       onMouseMove={handleMouse}
-      onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
-      animate={{
-        rotateX: transform.rotateX,
-        rotateY: transform.rotateY,
-      }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      style={{ perspective: 800, transformStyle: "preserve-3d" }}
+      style={{ transition: "transform 0.15s ease-out", transformStyle: "preserve-3d" }}
       className={className}
     >
       {children}
-      {/* Glare overlay */}
-      {glare && hovering && (
+      {glare && (
         <div
-          className="pointer-events-none absolute inset-0 rounded-lg z-10 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,0.12) 0%, transparent 55%)`,
-            opacity: hovering ? 1 : 0,
-          }}
+          ref={glareRef}
+          className="pointer-events-none absolute inset-0 rounded-lg z-10"
+          style={{ opacity: 0, transition: "opacity 0.3s" }}
         />
       )}
-    </motion.div>
+    </div>
   );
 }

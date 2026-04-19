@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useRef, useCallback } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { playSound } from "@/lib/audio";
 
@@ -17,32 +17,35 @@ export default function MagneticButton({
   strength = 0.35,
 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const reduced = useReducedMotion();
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const x = useSpring(rawX, { stiffness: 150, damping: 15, mass: 0.1 });
+  const y = useSpring(rawY, { stiffness: 150, damping: 15, mass: 0.1 });
 
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
-
-  function handleMouse(e: React.MouseEvent<HTMLDivElement>) {
+  const handleMouse = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setPosition({ x: x * strength, y: y * strength });
-  }
+    rawX.set((e.clientX - rect.left - rect.width / 2) * strength);
+    rawY.set((e.clientY - rect.top - rect.height / 2) * strength);
+  }, [strength, rawX, rawY]);
 
-  function handleEnter() {
+  const handleEnter = useCallback(() => {
     playSound("hover");
-  }
+  }, []);
 
-  function handleClick() {
+  const handleClick = useCallback(() => {
     playSound("click");
-  }
+  }, []);
 
-  function reset() {
-    setPosition({ x: 0, y: 0 });
+  const reset = useCallback(() => {
+    rawX.set(0);
+    rawY.set(0);
+  }, [rawX, rawY]);
+
+  if (reduced) {
+    return <div className={className}>{children}</div>;
   }
 
   return (
@@ -52,8 +55,7 @@ export default function MagneticButton({
       onMouseEnter={handleEnter}
       onMouseLeave={reset}
       onClick={handleClick}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      style={{ x, y }}
       className={className}
     >
       {children}

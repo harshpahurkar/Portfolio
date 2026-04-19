@@ -17,6 +17,8 @@ interface Particle {
   color: string;
   rgb: string;
   baseAlpha: number;
+  glowStyle: string;
+  coreStyle: string;
 }
 
 const COLORS = [
@@ -27,9 +29,11 @@ const COLORS = [
   { hex: "#ffffff", rgb: "255,255,255" },    // white (sparse)
 ];
 
-const PARTICLE_COUNT = 80;
-const CONNECTION_DIST = 160;
+const PARTICLE_COUNT = 55;
+const CONNECTION_DIST = 140;
+const CONNECTION_DIST_SQ = CONNECTION_DIST * CONNECTION_DIST;
 const MOUSE_RADIUS = 200;
+const MOUSE_RADIUS_SQ = MOUSE_RADIUS * MOUSE_RADIUS;
 const MOUSE_PUSH = 0.8;
 
 export default function RetroGrid() {
@@ -37,15 +41,17 @@ export default function RetroGrid() {
   const mouseRef = useRef({ x: -9999, y: -9999 });
   const particlesRef = useRef<Particle[]>([]);
   const animRef = useRef(0);
+  const visibleRef = useRef(true);
+  const frameCountRef = useRef(0);
 
   const createParticles = useCallback((w: number, h: number) => {
     const particles: Particle[] = [];
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      // Bias towards colored particles (white is rare)
       const colorIdx = i < PARTICLE_COUNT * 0.12
-        ? 4 // white
+        ? 4
         : Math.floor(Math.random() * 4);
       const color = COLORS[colorIdx];
+      const baseAlpha = 0.4 + Math.random() * 0.4;
       particles.push({
         x: Math.random() * w,
         y: Math.random() * h,
@@ -54,7 +60,9 @@ export default function RetroGrid() {
         radius: Math.random() * 2 + 1,
         color: color.hex,
         rgb: color.rgb,
-        baseAlpha: 0.4 + Math.random() * 0.4,
+        baseAlpha,
+        glowStyle: `rgba(${color.rgb}, ${baseAlpha * 0.08})`,
+        coreStyle: `rgba(${color.rgb}, ${baseAlpha})`,
       });
     }
     return particles;
@@ -63,7 +71,7 @@ export default function RetroGrid() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -90,17 +98,34 @@ export default function RetroGrid() {
       mouseRef.current = { x: -9999, y: -9999 };
     }
 
+    function onVisibilityChange() {
+      visibleRef.current = document.visibilityState === "visible";
+      if (visibleRef.current) {
+        frameCountRef.current = 0;
+        animRef.current = requestAnimationFrame(draw);
+      }
+    }
+
     resize();
     window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     if (particlesRef.current.length === 0) {
       particlesRef.current = createParticles(window.innerWidth, window.innerHeight);
     }
 
     function draw() {
-      if (!ctx || !canvas) return;
+      if (!ctx || !canvas || !visibleRef.current) return;
+
+      // Throttle to ~30fps by skipping every other frame
+      frameCountRef.current++;
+      if (frameCountRef.current % 2 !== 0) {
+        animRef.current = requestAnimationFrame(draw);
+        return;
+      }
+
       const W = canvas.width / dpr;
       const H = canvas.height / dpr;
       const particles = particlesRef.current;
@@ -111,49 +136,40 @@ export default function RetroGrid() {
 
       // Update particles
       for (const p of particles) {
-        // Mouse interaction — push away
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < MOUSE_RADIUS && dist > 0) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < MOUSE_RADIUS_SQ && distSq > 0) {
+          const dist = Math.sqrt(distSq);
           const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS * MOUSE_PUSH;
           p.vx += (dx / dist) * force;
           p.vy += (dy / dist) * force;
         }
 
-        // Damping
         p.vx *= 0.98;
         p.vy *= 0.98;
-
-        // Move
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap around edges
         if (p.x < -10) p.x = W + 10;
         if (p.x > W + 10) p.x = -10;
         if (p.y < -10) p.y = H + 10;
         if (p.y > H + 10) p.y = -10;
       }
 
-      // Draw connections
-      ctx.save();
+      // Draw connections — use simple color instead of gradient per line
+      ctx.lineWidth = 0.5;
       for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i];
           const b = particles[j];
           const dx = a.x - b.x;
           const dy = a.y - b.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const distSq = dx * dx + dy * dy;
 
-          if (dist < CONNECTION_DIST) {
-            const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
-            // Gradient line between two colored particles
-            const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-            grad.addColorStop(0, `rgba(${a.rgb}, ${alpha})`);
-            grad.addColorStop(1, `rgba(${b.rgb}, ${alpha})`);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 0.5;
+          if (distSq < CONNECTION_DIST_SQ) {
+            const alpha = (1 - Math.sqrt(distSq) / CONNECTION_DIST) * 0.15;
+            ctx.strokeStyle = `rgba(${a.rgb}, ${alpha})`;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
@@ -161,26 +177,21 @@ export default function RetroGrid() {
           }
         }
       }
-      ctx.restore();
 
-      // Draw particles
+      // Draw particles — batch by avoiding save/restore per particle
       for (const p of particles) {
-        // Outer glow
-        ctx.save();
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius * 4, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.rgb}, ${p.baseAlpha * 0.08})`;
+        ctx.fillStyle = p.glowStyle;
         ctx.fill();
 
-        // Core
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.rgb}, ${p.baseAlpha})`;
+        ctx.fillStyle = p.coreStyle;
         ctx.fill();
-        ctx.restore();
       }
 
-      // Mouse proximity glow — create a soft multicolor glow near cursor
+      // Mouse proximity glow
       if (mouse.x > 0 && mouse.y > 0) {
         const glowRadius = 250;
         const grad = ctx.createRadialGradient(
@@ -204,6 +215,7 @@ export default function RetroGrid() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [createParticles]);
 

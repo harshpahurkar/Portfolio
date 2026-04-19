@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 const KONAMI_SEQUENCE = [
   "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
@@ -9,26 +9,25 @@ const KONAMI_SEQUENCE = [
 ];
 
 export function useKonamiCode(callback: () => void) {
-  const [index, setIndex] = useState(0);
-
+  const indexRef = useRef(0);
   const stableCallback = useCallback(callback, [callback]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.code === KONAMI_SEQUENCE[index]) {
-        const next = index + 1;
+      if (e.code === KONAMI_SEQUENCE[indexRef.current]) {
+        const next = indexRef.current + 1;
         if (next === KONAMI_SEQUENCE.length) {
           stableCallback();
-          setIndex(0);
+          indexRef.current = 0;
         } else {
-          setIndex(next);
+          indexRef.current = next;
         }
       } else {
-        setIndex(e.code === KONAMI_SEQUENCE[0] ? 1 : 0);
+        indexRef.current = e.code === KONAMI_SEQUENCE[0] ? 1 : 0;
       }
     };
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [index, stableCallback]);
+  }, [stableCallback]);
 }

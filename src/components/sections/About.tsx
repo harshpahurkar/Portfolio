@@ -41,7 +41,7 @@ export default function About() {
                   alt="Harsh Pahurkar"
                   width={400}
                   height={400}
-                  priority
+                  loading="lazy"
                   className="relative rounded-lg object-cover w-full aspect-square grayscale-[20%] hover:grayscale-0 transition-all duration-500"
                 />
                 {/* Decorative border */}
