@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, Download } from "lucide-react";
 import { navItems } from "@/data/personal";
@@ -20,14 +20,22 @@ export default function Navigation() {
 
   const { scrollY } = useScroll();
 
+  const scrolledRef = useRef(false);
+  const hiddenRef = useRef(false);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    setScrolled(latest > 80);
-    // Hide nav when scrolling down past 150px, show when scrolling up
-    if (latest > 150 && latest > previous) {
-      setHidden(true);
-    } else {
-      setHidden(false);
+    const nowScrolled = latest > 80;
+    const nowHidden = latest > 150 && latest > previous;
+
+    // Only trigger re-render when values actually change
+    if (nowScrolled !== scrolledRef.current) {
+      scrolledRef.current = nowScrolled;
+      setScrolled(nowScrolled);
+    }
+    if (nowHidden !== hiddenRef.current) {
+      hiddenRef.current = nowHidden;
+      setHidden(nowHidden);
     }
   });
 

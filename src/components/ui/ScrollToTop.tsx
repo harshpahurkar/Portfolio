@@ -11,8 +11,14 @@ export default function ScrollToTop() {
   const reduced = useReducedMotion();
 
   useEffect(() => {
+    let ticking = false;
     function onScroll() {
-      setVisible(window.scrollY > 400);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setVisible(window.scrollY > 400);
+        ticking = false;
+      });
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

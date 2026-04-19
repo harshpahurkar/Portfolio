@@ -39,11 +39,9 @@ export default function SpotlightCursor() {
     function onMove(e: MouseEvent) {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      spotlight!.style.setProperty("--x", `${mouseX}px`);
-      spotlight!.style.setProperty("--y", `${mouseY}px`);
+      spotlight!.style.transform = `translate3d(${mouseX - 600}px, ${mouseY - 600}px, 0)`;
       spotlight!.style.opacity = "1";
-      dot!.style.left = `${mouseX}px`;
-      dot!.style.top = `${mouseY}px`;
+      dot!.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
       dot!.style.opacity = "1";
       ring!.style.opacity = "1";
 
@@ -73,15 +71,13 @@ export default function SpotlightCursor() {
       if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
         ringX = mouseX;
         ringY = mouseY;
-        ring!.style.left = `${ringX}px`;
-        ring!.style.top = `${ringY}px`;
+        ring!.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
         animating = false;
         return;
       }
       ringX += dx * 0.12;
       ringY += dy * 0.12;
-      ring!.style.left = `${ringX}px`;
-      ring!.style.top = `${ringY}px`;
+      ring!.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
       requestAnimationFrame(animate);
     }
 
@@ -99,40 +95,45 @@ export default function SpotlightCursor() {
 
   return (
     <>
-      {/* Spotlight gradient */}
+      {/* Spotlight gradient — small GPU-composited div, no full-viewport repaint */}
       <div
         ref={spotlightRef}
-        className="pointer-events-none fixed inset-0 z-30 opacity-0 transition-opacity duration-300 lg:block hidden"
+        className="pointer-events-none fixed z-30 opacity-0 transition-opacity duration-300 lg:block hidden"
         style={{
+          top: 0,
+          left: 0,
+          width: 1200,
+          height: 1200,
           background:
-            "radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(255, 45, 85, 0.03), transparent 40%)",
+            "radial-gradient(600px circle at center, rgba(255, 45, 85, 0.03), transparent 40%)",
+          willChange: "transform",
         }}
       />
       {/* Cursor dot */}
       <div
         ref={dotRef}
-        className="pointer-events-none fixed z-50 opacity-0 lg:block hidden"
+        className="pointer-events-none fixed top-0 left-0 z-50 opacity-0 lg:block hidden"
         style={{
           width: 6,
           height: 6,
           borderRadius: "50%",
           backgroundColor: "#ffffff",
-          transform: "translate(-50%, -50%)",
           transition: "width 0.2s, height 0.2s",
           mixBlendMode: "difference",
+          willChange: "transform",
         }}
       />
       {/* Cursor ring */}
       <div
         ref={ringRef}
-        className="pointer-events-none fixed z-50 opacity-0 lg:block hidden"
+        className="pointer-events-none fixed top-0 left-0 z-50 opacity-0 lg:block hidden"
         style={{
           width: 36,
           height: 36,
           borderRadius: "50%",
           border: "1.5px solid rgba(255, 255, 255, 0.2)",
-          transform: "translate(-50%, -50%)",
           transition: "width 0.3s ease, height 0.3s ease, border-color 0.3s",
+          willChange: "transform",
         }}
       />
     </>
