@@ -26,7 +26,7 @@ export const heroData = {
   name: "Harsh Pahurkar.",
   headline: "I build things that actually work.",
   description:
-    "Backend & Full-Stack Engineer focused on microservices, REST APIs, and cloud-native systems. Previously at the ",
+    "Backend & Full-Stack Engineer focused on microservices, REST APIs, automation, and cloud-native systems. Previously at the ",
   descriptionHighlight: "Government of Ontario",
   descriptionEnd: ".",
   status: "Available for opportunities",
@@ -34,8 +34,8 @@ export const heroData = {
 
 export const aboutData = {
   paragraphs: [
-    "I'm a backend-focused engineer based in Toronto. Over the past 3+ years I've worked on billing platforms, cloud microservices, and API infrastructure — at the Government of Ontario and before that at Affimintus Technologies in India.",
-    "At Affimintus I spent 1.5 years building production REST APIs with Java and Spring Boot. At the Government of Ontario I built automation frameworks and CI/CD pipelines. The through-line is backend systems that other people depend on.",
+    "I'm a backend-focused engineer based in Toronto. Over the past 3+ years I've worked on billing platforms, cloud microservices, automation frameworks, and API infrastructure at the Government of Ontario and Affimintus Technologies.",
+    "At Affimintus I built production REST APIs and full-stack systems with Java, Spring Boot, React, PostgreSQL, and MongoDB. At the Government of Ontario I built automation frameworks, API testing systems, and CI/CD pipelines. The through-line is software that other people depend on.",
     "I graduated from Seneca Polytechnic with a 3.6 GPA Honours in Computer Programming & Analysis. I also teach coding to kids at Code Ninjas — it's a good way to stay sharp on fundamentals.",
     "Outside of work I'm usually speedrunning Resident Evil 4 or diving into whatever new tech caught my attention that week.",
   ],
@@ -47,9 +47,9 @@ export const aboutData = {
 
 export const metrics: Metric[] = [
   { value: "3+", label: "Years Experience" },
-  { value: "75%", label: "Testing Reduction" },
-  { value: "39", label: "Currencies Processed" },
   { value: "200+", label: "Endpoints Validated" },
+  { value: "95%", label: "Code Coverage" },
+  { value: "50K+", label: "Lines Refactored" },
 ];
 
 export const navItems: NavItem[] = [

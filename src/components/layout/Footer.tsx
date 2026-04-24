@@ -1,10 +1,6 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import { contactData, footerData } from "@/data/personal";
-import { playSound } from "@/lib/audio";
 
 export default function Footer() {
   return (
@@ -19,24 +15,17 @@ export default function Footer() {
           { href: contactData.linkedin, label: "LinkedIn", icon: <LinkedinIcon size={20} /> },
           { href: `mailto:${contactData.email}`, label: "Email", icon: <Mail size={20} /> },
         ].map((link, i) => (
-          <motion.a
+          <a
             key={link.label}
             href={link.href}
             target={link.label !== "Email" ? "_blank" : undefined}
             rel={link.label !== "Email" ? "noopener noreferrer" : undefined}
             aria-label={link.label}
             className="text-muted hover:text-accent transition-colors p-2"
-            onHoverStart={() => playSound("hover")}
-            onTap={() => playSound("click")}
-            whileHover={{ y: -3, scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
+            style={{ animationDelay: `${i * 0.08}s` }}
           >
             {link.icon}
-          </motion.a>
+          </a>
         ))}
       </div>
 

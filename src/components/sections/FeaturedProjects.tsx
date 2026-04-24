@@ -8,11 +8,9 @@ export default function FeaturedProjects() {
 
   return (
     <section id="projects" className="py-24 md:py-32 relative">
-      {/* Background gradient wash */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background-card/30 to-background pointer-events-none" />
-      {/* Ambient glow orbs */}
-      <div className="absolute top-[20%] left-[-5%] w-[400px] h-[400px] bg-accent-tertiary/[0.05] rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[20%] right-[-5%] w-[350px] h-[350px] bg-accent/[0.04] rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute inset-0 cyber-grid-bg opacity-40 pointer-events-none" />
+      <div className="absolute top-16 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-tertiary/20 to-transparent pointer-events-none" />
       <div className="max-w-[1100px] mx-auto px-6 relative">
         <ScrollReveal variant="blur">
           <SectionHeading number="02" title="Projects" accentColor="text-accent-tertiary" gradientFrom="from-accent-tertiary/20" />

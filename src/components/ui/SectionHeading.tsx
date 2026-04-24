@@ -1,7 +1,4 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import TextScramble from "./TextScramble";
 
 interface SectionHeadingProps {
   number: string;
@@ -18,7 +15,7 @@ export default function SectionHeading({ number, title, className, accentColor =
         {number}
       </span>
       <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground tracking-tight">
-        <TextScramble text={title} />
+        {title}
       </h2>
       <div className={cn("h-px bg-gradient-to-r to-transparent mt-4 max-w-xs", gradientFrom)} />
     </div>

@@ -8,7 +8,7 @@ const MESSAGES = [
     "color: #ff2d55; font-size: 14px; font-weight: bold;",
   ],
   [
-    "%c🔧 Next.js 16 + React 19 + Tailwind v4 + Framer Motion",
+    "%c🔧 Next.js 16 + React 19 + Tailwind v4",
     "color: #bf5af2; font-size: 12px;",
   ],
   [

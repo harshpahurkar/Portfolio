@@ -2,7 +2,6 @@ import { Folder, ExternalLink } from "lucide-react";
 import { GithubIcon } from "@/components/ui/Icons";
 import TechTag from "@/components/ui/TechTag";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import TiltCard from "@/components/ui/TiltCard";
 import { getOtherProjects } from "@/data/projects";
 
 export default function OtherProjects() {
@@ -20,9 +19,7 @@ export default function OtherProjects() {
         {projects.map((project, i) => (
           <ScrollReveal key={project.slug} delay={i * 0.1}>
             <div className="transition-opacity duration-300 group-hover/list:opacity-50 hover:!opacity-100 h-full">
-            <TiltCard tiltAmount={5} className="h-full">
             <div className="bg-background-card/50 rounded-md overflow-hidden glow-border hover:bg-background-card/80 transition-all duration-300 h-full flex flex-col group">
-              {/* Accent top border — warm gradient */}
               <div className="h-[2px] w-full bg-gradient-to-r from-accent-warm/40 via-accent/20 to-transparent" />
               <div className="p-6 flex flex-col flex-1">
               <div className="flex items-center justify-between mb-5">
@@ -65,7 +62,6 @@ export default function OtherProjects() {
               </div>
               </div>
             </div>
-            </TiltCard>
             </div>
           </ScrollReveal>
         ))}

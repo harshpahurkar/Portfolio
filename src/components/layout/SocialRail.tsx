@@ -1,9 +1,6 @@
-"use client";
-
 import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import { contactData } from "@/data/personal";
-import { playSound } from "@/lib/audio";
 
 export default function SocialRail() {
   return (
@@ -16,8 +13,6 @@ export default function SocialRail() {
           rel="noopener noreferrer"
           aria-label="GitHub"
           className="text-muted hover:text-accent hover:-translate-y-1 hover:drop-shadow-[0_0_8px_rgba(255,45,85,0.4)] transition-all duration-200"
-          onMouseEnter={() => playSound("hover")}
-          onClick={() => playSound("click")}
         >
           <GithubIcon size={20} />
         </a>
@@ -27,8 +22,6 @@ export default function SocialRail() {
           rel="noopener noreferrer"
           aria-label="LinkedIn"
           className="text-muted hover:text-accent hover:-translate-y-1 hover:drop-shadow-[0_0_8px_rgba(255,45,85,0.4)] transition-all duration-200"
-          onMouseEnter={() => playSound("hover")}
-          onClick={() => playSound("click")}
         >
           <LinkedinIcon size={20} />
         </a>
@@ -36,8 +29,6 @@ export default function SocialRail() {
           href={`mailto:${contactData.email}`}
           aria-label="Email"
           className="text-muted hover:text-accent hover:-translate-y-1 hover:drop-shadow-[0_0_8px_rgba(255,45,85,0.4)] transition-all duration-200"
-          onMouseEnter={() => playSound("hover")}
-          onClick={() => playSound("click")}
         >
           <Mail size={20} />
         </a>

@@ -259,7 +259,7 @@ export default function ArchitectureDiagram({ data }: { data: ArchitectureData }
         <h2 className="text-sm font-mono text-accent uppercase tracking-widest mb-6">
           Architecture
         </h2>
-        <div className="bg-background-card/50 border border-white/[0.06] rounded-xl p-6 overflow-x-auto">
+        <div className="bg-background-card/50 border border-white/[0.06] rounded-lg p-6 overflow-x-auto">
           <StaticDiagram data={data} />
         </div>
       </section>
@@ -271,7 +271,7 @@ export default function ArchitectureDiagram({ data }: { data: ArchitectureData }
       <h2 className="text-sm font-mono text-accent uppercase tracking-widest mb-6">
         Architecture
       </h2>
-      <div className="bg-background-card/50 border border-white/[0.06] rounded-xl p-6 overflow-x-auto">
+      <div className="bg-background-card/50 border border-white/[0.06] rounded-lg p-6 overflow-x-auto">
         <svg viewBox={viewBox} className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
           {/* Connections first (behind nodes) */}
           {data.connections.map((conn, i) => (

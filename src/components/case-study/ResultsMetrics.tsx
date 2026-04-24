@@ -11,7 +11,7 @@ export default function ResultsMetrics({ results }: { results: string[] }) {
           {results.map((result, i) => (
             <div
               key={i}
-              className="bg-background-card/70 border border-white/[0.06] rounded-xl p-5 flex items-start gap-4 hover:border-accent/15 transition-colors duration-300"
+              className="bg-background-card/70 border border-white/[0.06] rounded-lg p-5 flex items-start gap-4 hover:border-accent/15 transition-colors duration-300"
             >
               <span className="text-accent font-mono text-lg font-bold shrink-0">
                 {String(i + 1).padStart(2, "0")}

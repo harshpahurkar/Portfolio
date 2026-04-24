@@ -1,245 +1,364 @@
 "use client";
 
-import { useRef, useEffect, useCallback } from "react";
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
-/**
- * Interactive particle constellation background.
- * Uses OffscreenCanvas + Web Worker on supported browsers (Chrome, Edge, Firefox)
- * to run all physics and rendering off the main thread.
- * Falls back to main-thread canvas on Safari.
- */
+type QualityProfile = {
+  particles: number;
+  maxLinks: number;
+  linkDistance: number;
+  dpr: number;
+  fps: number;
+  opacity: number;
+  spread: [number, number, number];
+};
 
-// ── Shared constants (used by fallback path) ──
+type ParticleState = {
+  baseX: number;
+  baseY: number;
+  baseZ: number;
+  phase: number;
+  speed: number;
+  drift: number;
+};
 
-interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  radius: number;
-  colorIdx: number;
-}
-
-const COLORS_RGB = [
-  "255,45,85",   // hot pink
-  "0,229,255",   // cyan
-  "191,90,242",  // violet
-  "255,107,43",  // orange
-  "255,255,255", // white
+const PALETTE = [
+  new THREE.Color("#ff2d55"),
+  new THREE.Color("#00e5ff"),
+  new THREE.Color("#bf5af2"),
+  new THREE.Color("#ff6b2b"),
+  new THREE.Color("#ffffff"),
 ];
 
-const PARTICLE_COUNT = 65;
-const CONNECTION_DIST = 150;
-const CONNECTION_DIST_SQ = CONNECTION_DIST * CONNECTION_DIST;
-const MOUSE_RADIUS = 200;
-const MOUSE_RADIUS_SQ = MOUSE_RADIUS * MOUSE_RADIUS;
-const MOUSE_PUSH = 0.8;
+function getQualityProfile(): QualityProfile {
+  const width = window.innerWidth;
+  const cores = navigator.hardwareConcurrency || 4;
+  const saveData = Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const GLOW_STYLES = COLORS_RGB.map((c) => `rgba(${c},0.07)`);
-const CORE_STYLES = COLORS_RGB.map((c) => `rgba(${c},0.75)`);
-const CONN_STYLE = "rgba(255,45,85,0.08)";
-const PROXIMITY_STYLE = "rgba(255,255,255,0.04)";
+  if (reduced || saveData) {
+    return { particles: 70, maxLinks: 120, linkDistance: 5.2, dpr: 1, fps: 30, opacity: 0.45, spread: [24, 15, 18] };
+  }
 
-function makeParticles(w: number, h: number): Particle[] {
-  const particles: Particle[] = [];
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    particles.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      radius: Math.random() * 2 + 1.2,
-      colorIdx: i < PARTICLE_COUNT * 0.1 ? 4 : Math.floor(Math.random() * 4),
+  if (width >= 1280 && cores >= 6) {
+    return { particles: 280, maxLinks: 720, linkDistance: 4.7, dpr: Math.min(window.devicePixelRatio || 1, 2), fps: 60, opacity: 0.96, spread: [34, 20, 26] };
+  }
+
+  if (width >= 768) {
+    return { particles: 180, maxLinks: 420, linkDistance: 4.4, dpr: Math.min(window.devicePixelRatio || 1, 1.6), fps: 50, opacity: 0.86, spread: [30, 18, 23] };
+  }
+
+  return { particles: 95, maxLinks: 180, linkDistance: 4.1, dpr: 1, fps: 34, opacity: 0.62, spread: [23, 15, 18] };
+}
+
+function createParticleTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 96;
+  canvas.height = 96;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  const gradient = ctx.createRadialGradient(48, 48, 0, 48, 48, 48);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.22, "rgba(255,255,255,0.72)");
+  gradient.addColorStop(0.48, "rgba(255,255,255,0.18)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 96, 96);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function createField(profile: QualityProfile) {
+  const [spreadX, spreadY, spreadZ] = profile.spread;
+  const positions = new Float32Array(profile.particles * 3);
+  const colors = new Float32Array(profile.particles * 3);
+  const sizes = new Float32Array(profile.particles);
+  const states: ParticleState[] = [];
+
+  for (let i = 0; i < profile.particles; i++) {
+    const x = THREE.MathUtils.randFloatSpread(spreadX);
+    const y = THREE.MathUtils.randFloatSpread(spreadY);
+    const z = THREE.MathUtils.randFloatSpread(spreadZ) - 5;
+    const color = i % 11 === 0 ? PALETTE[4] : PALETTE[Math.floor(Math.random() * 4)];
+
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
+    sizes[i] = THREE.MathUtils.randFloat(12, 34);
+    states.push({
+      baseX: x,
+      baseY: y,
+      baseZ: z,
+      phase: Math.random() * Math.PI * 2,
+      speed: THREE.MathUtils.randFloat(0.18, 0.72),
+      drift: THREE.MathUtils.randFloat(0.08, 0.34),
     });
   }
-  return particles;
+
+  const edges: Array<[number, number]> = [];
+  for (let i = 0; i < profile.particles; i++) {
+    const close: Array<{ index: number; dist: number }> = [];
+    const ax = positions[i * 3];
+    const ay = positions[i * 3 + 1];
+    const az = positions[i * 3 + 2];
+
+    for (let j = i + 1; j < profile.particles; j++) {
+      const dx = ax - positions[j * 3];
+      const dy = ay - positions[j * 3 + 1];
+      const dz = az - positions[j * 3 + 2];
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (dist < profile.linkDistance) close.push({ index: j, dist });
+    }
+
+    close
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 3)
+      .forEach(({ index }) => {
+        if (edges.length < profile.maxLinks) edges.push([i, index]);
+      });
+  }
+
+  return { positions, colors, sizes, states, edges };
 }
 
 export default function RetroGrid() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const workerRef = useRef<Worker | null>(null);
-
-  // ── Worker path (Chrome / Edge / Firefox) ──
-  const initWorker = useCallback((canvas: HTMLCanvasElement) => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const offscreen = (canvas as unknown as { transferControlToOffscreen(): OffscreenCanvas }).transferControlToOffscreen();
-    const worker = new Worker("/retro-grid-worker.js");
-    workerRef.current = worker;
-
-    worker.postMessage(
-      { type: "init", canvas: offscreen, dpr, width: window.innerWidth, height: window.innerHeight },
-      [offscreen],
-    );
-
-    const onResize = () => worker.postMessage({ type: "resize", width: window.innerWidth, height: window.innerHeight });
-    const onMouse = (e: MouseEvent) => worker.postMessage({ type: "mouse", x: e.clientX, y: e.clientY });
-    const onLeave = () => worker.postMessage({ type: "mouseleave" });
-    const onVis = () => worker.postMessage({ type: "visibility", visible: document.visibilityState === "visible" });
-
-    window.addEventListener("resize", onResize);
-    window.addEventListener("mousemove", onMouse, { passive: true });
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("visibilitychange", onVis);
-
-    return () => {
-      worker.terminate();
-      workerRef.current = null;
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("mousemove", onMouse);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, []);
-
-  // ── Main-thread fallback (Safari) ──
-  const initFallback = useCallback((canvas: HTMLCanvasElement) => {
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const mouse = { x: -9999, y: -9999 };
-    let particles: Particle[] = [];
-    let animId = 0;
-    let visible = true;
-
-    function resize() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
-      if (particles.length === 0) particles = makeParticles(w, h);
-    }
-
-    resize();
-    if (particles.length === 0) particles = makeParticles(window.innerWidth, window.innerHeight);
-
-    function draw(timestamp: number) {
-      if (!visible) return;
-      const W = canvas.width / dpr;
-      const H = canvas.height / dpr;
-      const breathe = Math.sin(timestamp * 0.0005) * 0.15 + 1;
-
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx!.clearRect(0, 0, W, H);
-
-      for (const p of particles) {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < MOUSE_RADIUS_SQ && distSq > 0) {
-          const dist = Math.sqrt(distSq);
-          const force = ((MOUSE_RADIUS - dist) / MOUSE_RADIUS) * MOUSE_PUSH;
-          p.vx += (dx / dist) * force;
-          p.vy += (dy / dist) * force;
-        }
-        p.vx *= 0.98;
-        p.vy *= 0.98;
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < -10) p.x = W + 10;
-        if (p.x > W + 10) p.x = -10;
-        if (p.y < -10) p.y = H + 10;
-        if (p.y > H + 10) p.y = -10;
-      }
-
-      ctx!.lineWidth = 0.5;
-      ctx!.beginPath();
-      for (let i = 0; i < particles.length; i++) {
-        const a = particles[i];
-        for (let j = i + 1; j < particles.length; j++) {
-          const b = particles[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          if (dx * dx + dy * dy < CONNECTION_DIST_SQ) {
-            ctx!.moveTo(a.x, a.y);
-            ctx!.lineTo(b.x, b.y);
-          }
-        }
-      }
-      ctx!.strokeStyle = CONN_STYLE;
-      ctx!.stroke();
-
-      ctx!.beginPath();
-      let hasProx = false;
-      for (const p of particles) {
-        const pdx = p.x - mouse.x;
-        const pdy = p.y - mouse.y;
-        const pdSq = pdx * pdx + pdy * pdy;
-        if (pdSq < MOUSE_RADIUS_SQ) {
-          const influence = 1 - Math.sqrt(pdSq) / MOUSE_RADIUS;
-          const glowR = p.radius * 6 + influence * 20;
-          ctx!.moveTo(p.x + glowR, p.y);
-          ctx!.arc(p.x, p.y, glowR, 0, Math.PI * 2);
-          hasProx = true;
-        }
-      }
-      if (hasProx) { ctx!.fillStyle = PROXIMITY_STYLE; ctx!.fill(); }
-
-      for (let c = 0; c < COLORS_RGB.length; c++) {
-        ctx!.beginPath();
-        let has = false;
-        for (const p of particles) {
-          if (p.colorIdx === c) {
-            const r = p.radius * 5 * breathe;
-            ctx!.moveTo(p.x + r, p.y);
-            ctx!.arc(p.x, p.y, r, 0, Math.PI * 2);
-            has = true;
-          }
-        }
-        if (has) { ctx!.fillStyle = GLOW_STYLES[c]; ctx!.fill(); }
-        ctx!.beginPath();
-        has = false;
-        for (const p of particles) {
-          if (p.colorIdx === c) {
-            ctx!.moveTo(p.x + p.radius, p.y);
-            ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            has = true;
-          }
-        }
-        if (has) { ctx!.fillStyle = CORE_STYLES[c]; ctx!.fill(); }
-      }
-
-      animId = requestAnimationFrame(draw);
-    }
-
-    const onMouse = (e: MouseEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
-    const onLeave = () => { mouse.x = -9999; mouse.y = -9999; };
-    const onVis = () => {
-      visible = document.visibilityState === "visible";
-      if (visible) animId = requestAnimationFrame(draw);
-    };
-
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", onMouse, { passive: true });
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("visibilitychange", onVis);
-    animId = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMouse);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, []);
+  const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const mount = mountRef.current;
+    if (!mount) return;
 
-    const supportsOffscreen = "transferControlToOffscreen" in canvas;
-    return supportsOffscreen ? initWorker(canvas) : initFallback(canvas);
-  }, [initWorker, initFallback]);
+    let profile = getQualityProfile();
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let animationId = 0;
+    let lastFrame = 0;
+    let visible = document.visibilityState === "visible";
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetMouseX = 0;
+    let targetMouseY = 0;
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.85 }}
-      aria-hidden="true"
-    />
-  );
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: width >= 768,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(profile.dpr);
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.domElement.className = "fixed inset-0 pointer-events-none z-0";
+    renderer.domElement.style.opacity = `${profile.opacity}`;
+    mount.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a0a0f, 0.033);
+
+    const camera = new THREE.PerspectiveCamera(58, width / height, 0.1, 90);
+    camera.position.set(0, 0, 18);
+
+    const texture = createParticleTexture();
+    const pointMaterial = new THREE.PointsMaterial({
+      size: 0.14,
+      map: texture ?? undefined,
+      transparent: true,
+      opacity: 0.92,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true,
+    });
+
+    let field = createField(profile);
+    const pointGeometry = new THREE.BufferGeometry();
+    const positionAttribute = new THREE.BufferAttribute(field.positions, 3);
+    pointGeometry.setAttribute("position", positionAttribute);
+    pointGeometry.setAttribute("color", new THREE.BufferAttribute(field.colors, 3));
+    const points = new THREE.Points(pointGeometry, pointMaterial);
+    points.frustumCulled = false;
+
+    const linePositions = new Float32Array(Math.max(1, field.edges.length * 2 * 3));
+    const lineColors = new Float32Array(Math.max(1, field.edges.length * 2 * 3));
+    const lineGeometry = new THREE.BufferGeometry();
+    const linePositionAttribute = new THREE.BufferAttribute(linePositions, 3);
+    lineGeometry.setAttribute("position", linePositionAttribute);
+    lineGeometry.setAttribute("color", new THREE.BufferAttribute(lineColors, 3));
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.28,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const links = new THREE.LineSegments(lineGeometry, lineMaterial);
+    links.frustumCulled = false;
+
+    const group = new THREE.Group();
+    group.add(links, points);
+    scene.add(group);
+
+    const ringMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00e5ff,
+      transparent: true,
+      opacity: 0.07,
+      wireframe: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const hotMaterial = new THREE.MeshBasicMaterial({
+      color: 0xff2d55,
+      transparent: true,
+      opacity: 0.055,
+      wireframe: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const torus = new THREE.Mesh(new THREE.TorusKnotGeometry(4.8, 0.12, 120, 10, 2, 3), ringMaterial);
+    torus.position.set(9, 1.4, -12);
+    torus.rotation.set(0.8, -0.4, 0.2);
+    const poly = new THREE.Mesh(new THREE.IcosahedronGeometry(4.2, 1), hotMaterial);
+    poly.position.set(-10, -2.5, -15);
+    poly.rotation.set(0.5, 0.2, -0.2);
+    scene.add(torus, poly);
+
+    function rebuild() {
+      profile = getQualityProfile();
+      field = createField(profile);
+
+      pointGeometry.setAttribute("position", new THREE.BufferAttribute(field.positions, 3));
+      pointGeometry.setAttribute("color", new THREE.BufferAttribute(field.colors, 3));
+
+      const nextLinePositions = new Float32Array(Math.max(1, field.edges.length * 2 * 3));
+      const nextLineColors = new Float32Array(Math.max(1, field.edges.length * 2 * 3));
+      lineGeometry.setAttribute("position", new THREE.BufferAttribute(nextLinePositions, 3));
+      lineGeometry.setAttribute("color", new THREE.BufferAttribute(nextLineColors, 3));
+
+      renderer.setPixelRatio(profile.dpr);
+      renderer.domElement.style.opacity = `${profile.opacity}`;
+    }
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+      rebuild();
+    }
+
+    function updateLines() {
+      const currentPositions = pointGeometry.getAttribute("position").array as Float32Array;
+      const currentColors = pointGeometry.getAttribute("color").array as Float32Array;
+      const linePos = lineGeometry.getAttribute("position").array as Float32Array;
+      const lineCol = lineGeometry.getAttribute("color").array as Float32Array;
+
+      let cursor = 0;
+      let colorCursor = 0;
+      for (const [a, b] of field.edges) {
+        const ax = currentPositions[a * 3];
+        const ay = currentPositions[a * 3 + 1];
+        const az = currentPositions[a * 3 + 2];
+        const bx = currentPositions[b * 3];
+        const by = currentPositions[b * 3 + 1];
+        const bz = currentPositions[b * 3 + 2];
+
+        linePos[cursor++] = ax;
+        linePos[cursor++] = ay;
+        linePos[cursor++] = az;
+        linePos[cursor++] = bx;
+        linePos[cursor++] = by;
+        linePos[cursor++] = bz;
+
+        for (let n = 0; n < 2; n++) {
+          lineCol[colorCursor++] = (currentColors[a * 3] + currentColors[b * 3]) * 0.42;
+          lineCol[colorCursor++] = (currentColors[a * 3 + 1] + currentColors[b * 3 + 1]) * 0.42;
+          lineCol[colorCursor++] = (currentColors[a * 3 + 2] + currentColors[b * 3 + 2]) * 0.42;
+        }
+      }
+
+      lineGeometry.getAttribute("position").needsUpdate = true;
+      lineGeometry.getAttribute("color").needsUpdate = true;
+    }
+
+    function animate(timestamp: number) {
+      animationId = requestAnimationFrame(animate);
+      if (!visible) return;
+
+      const frameMs = 1000 / profile.fps;
+      if (timestamp - lastFrame < frameMs) return;
+      lastFrame = timestamp;
+
+      const time = timestamp * 0.001;
+      const positions = pointGeometry.getAttribute("position").array as Float32Array;
+      for (let i = 0; i < field.states.length; i++) {
+        const state = field.states[i];
+        const sway = Math.sin(time * state.speed + state.phase);
+        const lift = Math.cos(time * state.speed * 0.72 + state.phase);
+        positions[i * 3] = state.baseX + sway * state.drift + targetMouseX * 0.7 * (state.baseZ / -24);
+        positions[i * 3 + 1] = state.baseY + lift * state.drift + targetMouseY * 0.45 * (state.baseZ / -24);
+        positions[i * 3 + 2] = state.baseZ + Math.sin(time * 0.24 + state.phase) * 0.36;
+      }
+      pointGeometry.getAttribute("position").needsUpdate = true;
+      updateLines();
+
+      mouseX += (targetMouseX - mouseX) * 0.045;
+      mouseY += (targetMouseY - mouseY) * 0.045;
+      group.rotation.x = -0.08 + mouseY * 0.12;
+      group.rotation.y = time * 0.025 + mouseX * 0.16;
+      group.rotation.z = Math.sin(time * 0.12) * 0.025;
+      camera.position.x = mouseX * 1.25;
+      camera.position.y = -mouseY * 0.85;
+      camera.lookAt(0, 0, -5);
+
+      torus.rotation.x += 0.0017;
+      torus.rotation.y += 0.0021;
+      poly.rotation.x -= 0.0012;
+      poly.rotation.y += 0.0018;
+
+      renderer.render(scene, camera);
+    }
+
+    function onPointerMove(event: PointerEvent) {
+      targetMouseX = (event.clientX / width - 0.5) * 2;
+      targetMouseY = (event.clientY / height - 0.5) * 2;
+    }
+
+    function onVisibility() {
+      visible = document.visibilityState === "visible";
+    }
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", onVisibility);
+    updateLines();
+    renderer.render(scene, camera);
+    animationId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
+      pointGeometry.dispose();
+      lineGeometry.dispose();
+      torus.geometry.dispose();
+      poly.geometry.dispose();
+      pointMaterial.dispose();
+      lineMaterial.dispose();
+      ringMaterial.dispose();
+      hotMaterial.dispose();
+      texture?.dispose();
+      renderer.dispose();
+      renderer.domElement.remove();
+    };
+  }, []);
+
+  return <div ref={mountRef} aria-hidden="true" />;
 }

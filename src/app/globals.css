@@ -146,6 +146,246 @@ section {
   background: linear-gradient(90deg, transparent, rgba(255, 45, 85, 0.2), rgba(0, 229, 255, 0.1), transparent);
 }
 
+.reveal-lite {
+  animation: reveal-lite 0.55s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.reveal-lite[data-direction="up"] {
+  --reveal-x: 0;
+  --reveal-y: 18px;
+}
+
+.reveal-lite[data-direction="down"] {
+  --reveal-x: 0;
+  --reveal-y: -18px;
+}
+
+.reveal-lite[data-direction="left"] {
+  --reveal-x: 24px;
+  --reveal-y: 0;
+}
+
+.reveal-lite[data-direction="right"] {
+  --reveal-x: -24px;
+  --reveal-y: 0;
+}
+
+.reveal-lite[data-variant="scale"] {
+  --reveal-scale: 0.96;
+}
+
+.reveal-lite[data-variant="blur"] {
+  --reveal-blur: 8px;
+}
+
+.hero-word-rotator {
+  display: inline-grid;
+  min-width: 10.2ch;
+  vertical-align: baseline;
+}
+
+.hero-word-rotator span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  animation: rotate-hero-word 12s ease-in-out infinite;
+}
+
+.hero-word-rotator span:nth-child(2) {
+  animation-delay: 3s;
+}
+
+.hero-word-rotator span:nth-child(3) {
+  animation-delay: 6s;
+}
+
+.hero-word-rotator span:nth-child(4) {
+  animation-delay: 9s;
+}
+
+.brand-panel {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(18, 18, 26, 0.84), rgba(10, 10, 15, 0.68)),
+    linear-gradient(90deg, rgba(255, 45, 85, 0.04), rgba(0, 229, 255, 0.03));
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+  padding: 1.25rem;
+}
+
+.brand-panel-primary {
+  min-height: 220px;
+}
+
+.mini-signal {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(18, 18, 26, 0.58);
+  color: var(--color-muted);
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.mini-signal:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 229, 255, 0.22);
+  color: var(--color-accent-secondary);
+}
+
+.mini-signal span {
+  font: 600 0.72rem var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero-orbit {
+  position: absolute;
+  right: 12%;
+  top: -7%;
+  width: 190px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(0, 229, 255, 0.16);
+  border-radius: 50%;
+  opacity: 0.9;
+  animation: orbit-spin 18s linear infinite;
+}
+
+.hero-orbit::before,
+.hero-orbit::after {
+  content: "";
+  position: absolute;
+  inset: 28px;
+  border: 1px solid rgba(255, 45, 85, 0.16);
+  border-radius: 50%;
+}
+
+.hero-orbit::after {
+  inset: 58px;
+  border-color: rgba(191, 90, 242, 0.2);
+}
+
+.hero-core {
+  position: absolute;
+  inset: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-accent-secondary);
+  background: rgba(10, 10, 15, 0.86);
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  animation: orbit-spin 18s linear infinite reverse;
+}
+
+.hero-core span {
+  position: absolute;
+  bottom: 28px;
+  font: 800 0.72rem var(--font-mono);
+  color: var(--color-foreground);
+}
+
+.hero-orbit-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 18px rgba(255, 45, 85, 0.55);
+}
+
+.hero-orbit-dot-a {
+  left: 50%;
+  top: -4px;
+}
+
+.hero-orbit-dot-b {
+  right: 18px;
+  bottom: 28px;
+  background: var(--color-accent-secondary);
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.5);
+}
+
+.hero-orbit-dot-c {
+  left: 18px;
+  bottom: 28px;
+  background: var(--color-accent-warm);
+  box-shadow: 0 0 18px rgba(255, 107, 43, 0.5);
+}
+
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(18, 18, 26, 0.54);
+  color: var(--color-muted);
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-chip:hover {
+  transform: translateY(-2px);
+  color: var(--color-accent);
+  border-color: rgba(255, 45, 85, 0.28);
+}
+
+.project-card-perspective {
+  perspective: 1100px;
+}
+
+.project-card-shell {
+  transform-style: preserve-3d;
+}
+
+.project-card-surface {
+  position: relative;
+  transform: translateZ(0) rotateX(0) rotateY(0);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.project-card-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.18), transparent 26%),
+    linear-gradient(135deg, transparent 20%, rgba(255, 255, 255, 0.08), transparent 52%);
+  mix-blend-mode: screen;
+  transition: opacity 0.28s ease;
+}
+
+.project-card-perspective:hover .project-card-surface {
+  transform: translateY(-7px) rotateX(2.5deg) rotateY(-3deg) translateZ(12px);
+  box-shadow:
+    0 26px 80px rgba(0, 0, 0, 0.38),
+    0 0 42px rgba(255, 45, 85, 0.08),
+    0 0 34px rgba(0, 229, 255, 0.055);
+}
+
+.project-card-perspective:hover .project-card-surface::before {
+  opacity: 1;
+}
+
+.banner-track {
+  width: max-content;
+  white-space: nowrap;
+  animation: banner-slide 32s linear infinite;
+}
+
+.banner-track-reverse {
+  animation-direction: reverse;
+  animation-duration: 38s;
+}
+
 /* Card hover — subtle lift + glow */
 .card-glow {
   transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
@@ -277,6 +517,64 @@ section {
 @keyframes scan-line {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
+}
+
+@keyframes reveal-lite {
+  from {
+    opacity: 0;
+    filter: blur(var(--reveal-blur, 0));
+    transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 18px), 0) scale(var(--reveal-scale, 1));
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes rotate-hero-word {
+  0%, 16% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  22%, 100% {
+    opacity: 0;
+    transform: translateY(-0.35em);
+  }
+}
+
+@keyframes orbit-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes banner-slide {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes konami-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.konami-pop > div:last-child {
+  animation: konami-pop 0.32s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 

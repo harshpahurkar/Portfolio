@@ -1,8 +1,13 @@
 import Image from "next/image";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import Parallax from "@/components/ui/Parallax";
 import { aboutData } from "@/data/personal";
+
+const aboutSignals = [
+  { value: "Toronto", label: "based" },
+  { value: "Seneca", label: "CPA honours" },
+  { value: "RE4", label: "speedrun brain" },
+];
 
 export default function About() {
   return (
@@ -20,7 +25,7 @@ export default function About() {
               {aboutData.paragraphs.map((p, i) => (
                 <p key={i} dangerouslySetInnerHTML={{
                   __html: p.replace(
-                    /(Government of Ontario|Affimintus Technologies|Seneca Polytechnic|Code Ninjas|3\.9 GPA|Resident Evil)/g,
+                    /(Government of Ontario|Affimintus Technologies|Seneca Polytechnic|Code Ninjas|3\.6 GPA|Resident Evil)/g,
                     '<span class="text-foreground">$1</span>'
                   ),
                 }} />
@@ -31,10 +36,8 @@ export default function About() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
-            <Parallax speed={-0.15}>
             <div className="relative mx-auto md:mx-0 w-[280px] md:w-full max-w-[350px] overflow-hidden md:overflow-visible">
               <div className="relative group">
-                {/* Glow effect behind image */}
                 <div className="absolute -inset-2 bg-accent-secondary/[0.08] rounded-lg blur-xl group-hover:bg-accent-secondary/[0.15] transition-all duration-500" />
                 <Image
                   src="/photo.jpg"
@@ -44,11 +47,17 @@ export default function About() {
                   loading="lazy"
                   className="relative rounded-lg object-cover w-full aspect-square grayscale-[20%] hover:grayscale-0 transition-all duration-500"
                 />
-                {/* Decorative border */}
                 <div className="absolute inset-0 rounded-lg border-2 border-accent-secondary/30 translate-x-5 translate-y-5 -z-10 group-hover:translate-x-3 group-hover:translate-y-3 transition-transform duration-300" />
               </div>
+              <div className="grid grid-cols-3 gap-2 mt-6">
+                {aboutSignals.map((signal) => (
+                  <div key={signal.value} className="rounded-md border border-white/[0.06] bg-background-card/55 px-3 py-3 text-center">
+                    <span className="block text-sm font-display font-bold text-foreground">{signal.value}</span>
+                    <span className="block text-[10px] uppercase tracking-[0.16em] text-muted/60 mt-1">{signal.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            </Parallax>
           </ScrollReveal>
         </div>
       </div>

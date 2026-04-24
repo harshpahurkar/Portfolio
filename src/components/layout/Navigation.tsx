@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback } from "react";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { Menu, Download } from "lucide-react";
 import { navItems } from "@/data/personal";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { cn } from "@/lib/utils";
-import MobileMenu from "./MobileMenu";
-import MagneticButton from "@/components/ui/MagneticButton";
-import { playSound } from "@/lib/audio";
+
+const MobileMenu = dynamic(() => import("./MobileMenu"));
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -18,34 +17,47 @@ export default function Navigation() {
   const sectionIds = useMemo(() => navItems.map((item) => item.href.replace("#", "")), []);
   const active = useActiveSection(sectionIds);
 
-  const { scrollY } = useScroll();
-
   const scrolledRef = useRef(false);
   const hiddenRef = useRef(false);
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0;
-    const nowScrolled = latest > 80;
-    const nowHidden = latest > 150 && latest > previous;
+  useEffect(() => {
+    let previous = window.scrollY;
+    let ticking = false;
 
-    // Only trigger re-render when values actually change
-    if (nowScrolled !== scrolledRef.current) {
-      scrolledRef.current = nowScrolled;
-      setScrolled(nowScrolled);
+    function update() {
+      const latest = window.scrollY;
+      const nowScrolled = latest > 80;
+      const nowHidden = latest > 180 && latest > previous;
+
+      if (nowScrolled !== scrolledRef.current) {
+        scrolledRef.current = nowScrolled;
+        setScrolled(nowScrolled);
+      }
+      if (nowHidden !== hiddenRef.current) {
+        hiddenRef.current = nowHidden;
+        setHidden(nowHidden);
+      }
+      previous = latest;
+      ticking = false;
     }
-    if (nowHidden !== hiddenRef.current) {
-      hiddenRef.current = nowHidden;
-      setHidden(nowHidden);
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
     }
-  });
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <motion.header
-        animate={{ y: hidden ? "-100%" : "0%" }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+      <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-[background,border,box-shadow] duration-300",
+          "fixed top-0 left-0 right-0 z-50 transition-[transform,background,border,box-shadow] duration-300",
+          hidden ? "-translate-y-full" : "translate-y-0",
           scrolled
             ? "bg-background/80 backdrop-blur-md border-b border-accent/[0.08] shadow-lg shadow-accent/[0.04]"
             : "bg-transparent"
@@ -62,8 +74,6 @@ export default function Navigation() {
               <a
                 key={item.href}
                 href={item.href}
-                onMouseEnter={() => playSound("hover")}
-                onClick={() => playSound("click")}
                 className={cn(
                   "relative text-sm transition-colors duration-200 py-1 group",
                   active === item.href.replace("#", "")
@@ -83,15 +93,13 @@ export default function Navigation() {
                 />
               </a>
             ))}
-            <MagneticButton strength={0.2}>
-              <a
-                href="/resume.pdf"
-                download
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm text-foreground border border-foreground/20 rounded-full hover:border-accent hover:text-accent transition-colors"
-              >
-                Resume <Download size={14} />
-              </a>
-            </MagneticButton>
+            <a
+              href="/resume.pdf"
+              download
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm text-foreground border border-foreground/20 rounded-full hover:border-accent hover:text-accent transition-colors"
+            >
+              Resume <Download size={14} />
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -103,9 +111,9 @@ export default function Navigation() {
             <Menu size={24} />
           </button>
         </nav>
-      </motion.header>
+      </header>
 
-      <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+      {menuOpen && <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />}
     </>
   );
 }

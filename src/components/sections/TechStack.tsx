@@ -1,5 +1,3 @@
-"use client";
-
 import SectionHeading from "@/components/ui/SectionHeading";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { techStack } from "@/data/techStack";
@@ -14,14 +12,13 @@ const CATEGORY_COLORS: Record<string, { text: string; border: string; bg: string
 
 export default function TechStack() {
   return (
-    <section className="py-24 md:py-32 relative">
-      {/* Cyberpunk gradient wash */}
+    <section id="stack" className="py-24 md:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-tl from-accent-secondary/[0.03] via-transparent to-accent-warm/[0.03] pointer-events-none" />
       <div className="max-w-[1100px] mx-auto px-6 relative">
         <ScrollReveal variant="blur">
           <SectionHeading number="04" title="Tech Stack" className="mb-4" accentColor="text-accent-secondary" gradientFrom="from-accent-secondary/20" />
           <p className="text-muted text-sm mb-12 font-mono">
-            Technologies I work with regularly. Hover if you dare.
+            The toolkit behind the backend, cloud, automation, and UI work.
           </p>
         </ScrollReveal>
 
@@ -30,7 +27,7 @@ export default function TechStack() {
             const colors = CATEGORY_COLORS[category.category] || CATEGORY_COLORS["Languages"];
             return (
             <ScrollReveal key={category.category} delay={i * 0.1}>
-              <div className="bg-background-card/50 rounded-xl p-6 glow-border">
+              <div className="bg-background-card/50 rounded-lg p-6 glow-border">
                 <h3 className={`text-xs font-mono ${colors.label} mb-4 tracking-[0.15em] uppercase`}>
                   {category.category}
                 </h3>

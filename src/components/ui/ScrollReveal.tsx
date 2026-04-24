@@ -1,8 +1,3 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
 interface ScrollRevealProps {
@@ -13,32 +8,6 @@ interface ScrollRevealProps {
   variant?: "default" | "scale" | "slide" | "blur";
 }
 
-const offsets = {
-  up: { y: 30 },
-  down: { y: -30 },
-  left: { x: 40 },
-  right: { x: -40 },
-};
-
-const variants = {
-  default: (dir: "up" | "down" | "left" | "right") => ({
-    hidden: { opacity: 0, ...offsets[dir] },
-    visible: { opacity: 1, x: 0, y: 0 },
-  }),
-  scale: () => ({
-    hidden: { opacity: 0, scale: 0.85 },
-    visible: { opacity: 1, scale: 1 },
-  }),
-  slide: (dir: "up" | "down" | "left" | "right") => ({
-    hidden: { opacity: 0, ...Object.fromEntries(Object.entries(offsets[dir]).map(([k, v]) => [k, (v as number) * 2])) },
-    visible: { opacity: 1, x: 0, y: 0 },
-  }),
-  blur: (dir: "up" | "down" | "left" | "right") => ({
-    hidden: { opacity: 0, filter: "blur(8px)", ...offsets[dir] },
-    visible: { opacity: 1, filter: "blur(0px)", x: 0, y: 0 },
-  }),
-};
-
 export default function ScrollReveal({
   children,
   direction = "up",
@@ -46,29 +15,16 @@ export default function ScrollReveal({
   className,
   variant = "default",
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-  const reduced = useReducedMotion();
-
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
-
-  const v = variants[variant](direction);
-
   return (
-    <motion.div
-      ref={ref}
-      initial={v.hidden}
-      animate={isInView ? v.visible : v.hidden}
-      transition={{
-        duration: variant === "slide" ? 0.5 : 0.4,
-        delay,
-        ease: [0.25, 1, 0.5, 1],
+    <div
+      className={cn("reveal-lite", className)}
+      data-direction={direction}
+      data-variant={variant}
+      style={{
+        animationDelay: delay ? `${delay}s` : undefined,
       }}
-      className={cn(className)}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

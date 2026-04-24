@@ -8,13 +8,6 @@ const COLORS = [
   "255,255,255", // white
 ];
 
-const PARTICLE_COUNT = 65;
-const CONNECTION_DIST = 150;
-const CONNECTION_DIST_SQ = CONNECTION_DIST * CONNECTION_DIST;
-const MOUSE_RADIUS = 200;
-const MOUSE_RADIUS_SQ = MOUSE_RADIUS * MOUSE_RADIUS;
-const MOUSE_PUSH = 0.8;
-
 const GLOW_STYLES = COLORS.map((c) => `rgba(${c},0.07)`);
 const CORE_STYLES = COLORS.map((c) => `rgba(${c},0.75)`);
 const CONN_STYLE = "rgba(255,45,85,0.08)";
@@ -30,16 +23,24 @@ let mouseY = -9999;
 let particles = [];
 let visible = true;
 let animId = 0;
+let lastFrame = 0;
+let profile = {
+  particleCount: 96,
+  connectionDist: 165,
+  mouseRadius: 235,
+  mousePush: 0.68,
+  fps: 60,
+};
 
 function createParticles(w, h) {
   particles = [];
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const colorIdx = i < PARTICLE_COUNT * 0.1 ? 4 : Math.floor(Math.random() * 4);
+  for (let i = 0; i < profile.particleCount; i++) {
+    const colorIdx = i < profile.particleCount * 0.1 ? 4 : Math.floor(Math.random() * 4);
     particles.push({
       x: Math.random() * w,
       y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
+      vx: (Math.random() - 0.5) * 0.42,
+      vy: (Math.random() - 0.5) * 0.42,
       radius: Math.random() * 2 + 1.2,
       colorIdx,
     });
@@ -48,6 +49,12 @@ function createParticles(w, h) {
 
 function draw(timestamp) {
   if (!ctx || !visible) return;
+  const frameMs = 1000 / profile.fps;
+  if (timestamp - lastFrame < frameMs) {
+    animId = requestAnimationFrame(draw);
+    return;
+  }
+  lastFrame = timestamp;
 
   const breathe = Math.sin(timestamp * 0.0005) * 0.15 + 1;
 
@@ -60,9 +67,10 @@ function draw(timestamp) {
     const dx = p.x - mouseX;
     const dy = p.y - mouseY;
     const distSq = dx * dx + dy * dy;
-    if (distSq < MOUSE_RADIUS_SQ && distSq > 0) {
+    const mouseRadiusSq = profile.mouseRadius * profile.mouseRadius;
+    if (distSq < mouseRadiusSq && distSq > 0) {
       const dist = Math.sqrt(distSq);
-      const force = ((MOUSE_RADIUS - dist) / MOUSE_RADIUS) * MOUSE_PUSH;
+      const force = ((profile.mouseRadius - dist) / profile.mouseRadius) * profile.mousePush;
       p.vx += (dx / dist) * force;
       p.vy += (dy / dist) * force;
     }
@@ -79,13 +87,14 @@ function draw(timestamp) {
   // Connections — single batched path
   ctx.lineWidth = 0.5;
   ctx.beginPath();
+  const connectionDistSq = profile.connectionDist * profile.connectionDist;
   for (let i = 0; i < particles.length; i++) {
     const a = particles[i];
     for (let j = i + 1; j < particles.length; j++) {
       const b = particles[j];
       const dx = a.x - b.x;
       const dy = a.y - b.y;
-      if (dx * dx + dy * dy < CONNECTION_DIST_SQ) {
+      if (dx * dx + dy * dy < connectionDistSq) {
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
       }
@@ -102,8 +111,9 @@ function draw(timestamp) {
     const pdx = p.x - mouseX;
     const pdy = p.y - mouseY;
     const pdSq = pdx * pdx + pdy * pdy;
-    if (pdSq < MOUSE_RADIUS_SQ) {
-      const influence = 1 - Math.sqrt(pdSq) / MOUSE_RADIUS;
+    const mouseRadiusSq = profile.mouseRadius * profile.mouseRadius;
+    if (pdSq < mouseRadiusSq) {
+      const influence = 1 - Math.sqrt(pdSq) / profile.mouseRadius;
       const glowR = p.radius * 6 + influence * 20;
       ctx.moveTo(p.x + glowR, p.y);
       ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
@@ -160,6 +170,7 @@ self.onmessage = function (e) {
       dpr = msg.dpr;
       W = msg.width;
       H = msg.height;
+      profile = { ...profile, ...msg.profile };
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       ctx = canvas.getContext("2d", { alpha: true });
@@ -169,11 +180,13 @@ self.onmessage = function (e) {
     case "resize":
       W = msg.width;
       H = msg.height;
+      profile = { ...profile, ...msg.profile };
       if (canvas) {
+        dpr = msg.profile?.dpr || dpr;
         canvas.width = W * dpr;
         canvas.height = H * dpr;
       }
-      if (particles.length === 0) createParticles(W, H);
+      if (particles.length !== profile.particleCount) createParticles(W, H);
       break;
     case "mouse":
       mouseX = msg.x;

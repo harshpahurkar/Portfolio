@@ -1,11 +1,7 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import TechTag from "@/components/ui/TechTag";
-import TiltCard from "@/components/ui/TiltCard";
-import { playSound } from "@/lib/audio";
 import type { Project } from "@/types";
 
 const CARD_VISUALS: Record<string, { gradient: string; monogram: string; label: string; hoverAccent: string; ctaColor: string }> = {
@@ -43,11 +39,10 @@ export default function ProjectCard({ project }: { project: Project }) {
   const visual = CARD_VISUALS[project.slug];
 
   return (
-    <Link href={`/projects/${project.slug}`} onClick={() => playSound("click")}>
-      <TiltCard className="relative h-full">
+    <Link href={`/projects/${project.slug}`} className="block h-full project-card-perspective">
+      <div className="relative h-full project-card-shell">
         <article
-          onMouseEnter={() => playSound("hover")}
-          className="h-full rounded-lg overflow-hidden border border-white/[0.06] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-[5px] transition-all duration-200 cursor-pointer flex flex-col group"
+          className="project-card-surface h-full rounded-lg overflow-hidden border border-white/[0.06] hover:border-white/[0.15] hover:shadow-2xl hover:shadow-black/20 transition-all duration-300 cursor-pointer flex flex-col group bg-background-card/30"
         >
         {/* Visual header zone */}
         {visual && (
@@ -124,7 +119,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
       </article>
-      </TiltCard>
+      </div>
     </Link>
   );
 }

@@ -5,14 +5,12 @@ import "./globals.css";
 import Navigation from "@/components/layout/Navigation";
 import SocialRail from "@/components/layout/SocialRail";
 import Footer from "@/components/layout/Footer";
-import PageTransition from "@/components/ui/PageTransition";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import ConsoleEasterEgg from "@/components/ui/ConsoleEasterEgg";
 import RetroGrid from "@/components/ui/RetroGrid";
 import SpotlightCursor from "@/components/ui/SpotlightCursor";
 import KonamiCode from "@/components/ui/KonamiCode";
-import SoundToggle from "@/components/ui/SoundToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -120,12 +118,10 @@ export default function RootLayout({
         <RetroGrid />
         <SpotlightCursor />
         <ScrollProgress />
-        <PageTransition />
         <main>{children}</main>
         <Footer />
         <ScrollToTop />
         <KonamiCode />
-        <SoundToggle />
         <ConsoleEasterEgg />
       </body>
     </html>

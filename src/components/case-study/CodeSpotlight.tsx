@@ -15,7 +15,7 @@ export default async function CodeSpotlight({
         <h2 className="text-sm font-mono text-accent uppercase tracking-widest mb-6">
           Code Spotlight
         </h2>
-        <div className="rounded-xl overflow-hidden border border-white/[0.06]">
+        <div className="rounded-lg overflow-hidden border border-white/[0.06]">
           {snippet.filename && (
             <div className="bg-background-card px-5 py-3 font-mono text-xs text-muted/70 border-b border-white/[0.06] flex items-center gap-3">
               <div className="flex gap-1.5">
